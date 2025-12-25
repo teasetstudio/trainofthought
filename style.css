@@ -1,0 +1,24 @@
+body, html {
+  margin: 0;
+  padding: 0;
+}
+.node {
+  fill: #69b3a2;
+  stroke: #64a072;
+  stroke-width: 2px;
+  cursor: pointer;
+}
+.node-link {
+  stroke-opacity: 0.6;
+  fill: none;
+  stroke: #999;
+  stroke-width: 2px;
+  marker-end: url(#arrow);
+}
+.arrow {
+  fill: #999;
+}
+.node.selected {
+  stroke: red;
+  stroke-width: 2px;
+}
