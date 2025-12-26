@@ -1,10 +1,12 @@
 import { data, calculateEdgePosition } from './services/data.js';
 import { newNode } from './services/newNode.js';
+import { updateContentModal } from './services/updateContent.js';
 import { svgContainer } from './svg.js';
 
 function updateGraph() {
   const nodes = data.getNodes();
   const links = data.getLinks();
+  console.log('nodes', nodes)
 
   svgContainer.selectAll(".node-link")
     .data(links)
@@ -31,6 +33,27 @@ function updateGraph() {
       return calculateEdgePosition(source, target).y;
     });
 
+  // Just decaration
+  svgContainer.selectAll(".node-back")
+    .data(nodes, d => d.id)
+    .enter().append("circle")
+    .attr("class", "node-back")
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y)
+    .attr("id", d => `id_node-back_${d.id}`)
+    .attr("r", d => d.r)
+
+  svgContainer.selectAll(".node-text")
+    .data(nodes)
+    .enter().append("text")
+    .attr("class", "node-text")
+    .attr("x", d => d.x)
+    .attr("y", d => d.y)
+    .attr("id", d => `id_node-text_${d.id}`)
+    .attr("text-anchor", "middle")
+    .attr("alignment-baseline", "middle")
+    .text(d => d.content);
+
   svgContainer.selectAll(".node")
     .data(nodes, d => d.id)
     .enter().append("circle")
@@ -41,17 +64,19 @@ function updateGraph() {
     .attr("r", d => d.r)
     .call(d3.drag()
       .on("start", function(event, d) {
-        if (event.sourceEvent.altKey) {
+        if (event.sourceEvent.altKey && newNode.nodeSvg === null) {
           newNode.create(event, d);
         }
 
         if (newNode.nodeSvg) {
+          d3.select(`#id_node-back_${newNode.nodeData.id}`).raise();
+          d3.select(`#id_node-text_${newNode.nodeData.id}`).raise();
           newNode.nodeSvg.raise().classed("active", true);
           newNode.linkSvg.lower();
-          d3.select(`#id_node-text_${newNode.nodeData.id}`).raise();
         } else {
-          d3.select(this).raise().classed("active", true);
+          // d3.select(`#id_node-back_${d.id}`).raise();
           d3.select(`#id_node-text_${d.id}`).raise();
+          d3.select(this).raise().classed("active", true);
         }
         // Store initial position
         d.initialX = d.x;
@@ -84,6 +109,7 @@ function updateGraph() {
           newNode.nodeData.x = x;
           newNode.nodeData.y = y;
           newNode.nodeSvg.attr("cx", x).attr("cy", y);
+          d3.select(`#id_node-back_${newNode.nodeData.id}`).attr("cx", x).attr("cy", y);
           d3.select(`#id_node-text_${newNode.nodeData.id}`).attr("x", x).attr("y", y);
 
           if (newNode.linkSvg && newNode.linkData) {
@@ -100,6 +126,7 @@ function updateGraph() {
           d.y = y;
           d3.select(this).attr("cx", x).attr("cy", y);
           d3.select(`#id_node-text_${d.id}`).attr("x", x).attr("y", y)
+          d3.select(`#id_node-back_${d.id}`).attr("cx", x).attr("cy", y)
 
           d3.selectAll(".node-link").attr("x1", d => {
               const source = nodes.find(node => node.id === d.source);
@@ -123,22 +150,16 @@ function updateGraph() {
       })
       .on("end", function(event, d) {
         if (newNode.nodeSvg) {
+          // newNodeId & newNodeContent will be null after resetCreatingData
+          const newNodeId = newNode.nodeData.id;
+          const newNodeContent = newNode.nodeData.content;
           newNode.resetCreatingData();
+          updateContentModal(newNodeId, newNodeContent);
         } else {
           d3.select(this).classed("active", false);
         }
   }));
 
-  svgContainer.selectAll(".node-text")
-    .data(nodes)
-    .enter().append("text")
-    .attr("class", "node-text")
-    .attr("x", d => d.x)
-    .attr("y", d => d.y)
-    .attr("id", d => `id_node-text_${d.id}`)
-    .attr("text-anchor", "middle")
-    .attr("alignment-baseline", "middle")
-    .text(d => d.id);
 }
 
 export { updateGraph };

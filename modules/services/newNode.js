@@ -16,6 +16,7 @@ class NewNode {
     this.linkData = null;
   }
 
+  // d = data of the parent circle
   create = (event, d) => {
     let x = 0;
     let y = 0;
@@ -27,7 +28,7 @@ class NewNode {
       x = coor[0];
       y = coor[1];
     }
-    const newNode = { id: data.nodes.length + 1, x, y, r: 30 };
+    const newNode = { id: data.nodes.length + 1, x, y, r: 30, content: "Node " + data.nodes.length + 1 };
     data.addNode(newNode);
     if (d) data.addLink({ source: d.id, target: newNode.id });
     updateGraph();
@@ -41,7 +42,7 @@ class NewNode {
       this.linkSvg = d3.select(`#id_node-link_${parentNodeId}_${newNodeId}`);
       this.linkData = this.linkSvg.datum();
     }
-  }
+  };
 }
 
 const newNode = new NewNode();

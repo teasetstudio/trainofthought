@@ -1,7 +1,7 @@
 const nodesData = [
-  { id: 1, x: 100, y: 100, r: 10 },
-  { id: 2, x: 200, y: 200, r: 20 },
-  { id: 3, x: 300, y: 300, r: 30 },
+  { id: 1, x: 100, y: 100, r: 10, content: "Node 1" },
+  { id: 2, x: 200, y: 200, r: 20, content: "Node 2" },
+  { id: 3, x: 300, y: 300, r: 30, content: "Node 33" },
 ];
 
 const linksData = [
@@ -52,6 +52,10 @@ class Data {
 
   addLink = (newLink) => {
     this.links.push(newLink);
+  }
+
+  updateNode = (id, newNode) => {
+    this.nodes = this.nodes.map(node => node.id === id ? {...node, ...newNode} : node);
   }
 
   calculateEdgePosition(source, target) {

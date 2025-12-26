@@ -3,10 +3,14 @@ body, html {
   padding: 0;
 }
 .node {
-  fill: #69b3a2;
-  stroke: #64a072;
+  fill: transparent;
+  stroke: #494949ff;
   stroke-width: 2px;
   cursor: pointer;
+  opacity: 0.6;
+}
+.node-back {
+  fill: #ed95ddff;
 }
 .node-link {
   stroke-opacity: 0.6;
