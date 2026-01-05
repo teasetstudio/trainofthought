@@ -1,5 +1,4 @@
-import { data } from './data.js';
-import { svgContainer } from '../svg.js';
+import { updateNodeContent } from '../svgUtils.js';
 
 export function updateContentModal(nodeId, currentValue) {
   // Create and show modal
@@ -28,7 +27,17 @@ export function updateContentModal(nodeId, currentValue) {
     .style('border', '1px solid #ddd')
     .style('border-radius', '4px')
     .style('resize', 'vertical')
-    .property('value', currentValue || '');
+    .property('value', currentValue || '')
+    .on('keydown', function(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        // Trigger the save button click
+        saveButton.node().click();
+      }
+    });
+
+  // Focus the textarea after a small delay to ensure it's rendered
+  setTimeout(() => textarea.node().focus(), 0);
 
   // Add buttons container
   const buttonContainer = modal.append('div')
@@ -49,7 +58,8 @@ export function updateContentModal(nodeId, currentValue) {
     });
 
   // Add save button
-  buttonContainer.append('button')
+  // Store reference to the save button
+  const saveButton = buttonContainer.append('button')
     .text('Save')
     .style('padding', '8px 16px')
     .style('background', '#4CAF50')
@@ -59,12 +69,7 @@ export function updateContentModal(nodeId, currentValue) {
     .style('cursor', 'pointer')
     .on('click', () => {
       const nodeText = textarea.node().value;
-
-      data.updateNode(nodeId, { content: nodeText });
-      svgContainer.selectAll(".node-text")
-        .filter(d => d.id === nodeId)
-        .text(nodeText);
-      
+      updateNodeContent(nodeId, nodeText);
       modal.remove();
       d3.select('body').on('click.node-modal', null);
     });

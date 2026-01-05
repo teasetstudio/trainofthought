@@ -54,8 +54,9 @@ class Data {
     this.links.push(newLink);
   }
 
-  updateNode = (id, newNode) => {
-    this.nodes = this.nodes.map(node => node.id === id ? {...node, ...newNode} : node);
+  updateNodeContent = (id, newContent) => {
+    const nodeIndex = this.nodes.findIndex(node => node.id === id);
+    this.nodes[nodeIndex].content = newContent;
   }
 
   calculateEdgePosition(source, target) {

@@ -1,12 +1,10 @@
 import { data, calculateEdgePosition } from './services/data.js';
 import { newNode } from './services/newNode.js';
-import { updateContentModal } from './services/updateContent.js';
 import { svgContainer } from './svg.js';
 
 function updateGraph() {
   const nodes = data.getNodes();
   const links = data.getLinks();
-  console.log('nodes', nodes)
 
   svgContainer.selectAll(".node-link")
     .data(links)
@@ -88,6 +86,7 @@ function updateGraph() {
         let x = 0;
         let y = 0;
 
+        // Shift
         if (event.sourceEvent.shiftKey) {
           // Shift key is pressed: restrict movement to horizontal or vertical
           if (Math.abs(dx) > Math.abs(dy)) {
@@ -150,16 +149,11 @@ function updateGraph() {
       })
       .on("end", function(event, d) {
         if (newNode.nodeSvg) {
-          // newNodeId & newNodeContent will be null after resetCreatingData
-          const newNodeId = newNode.nodeData.id;
-          const newNodeContent = newNode.nodeData.content;
-          newNode.resetCreatingData();
-          updateContentModal(newNodeId, newNodeContent);
+          newNode.finalizeNodeCreation();
         } else {
           d3.select(this).classed("active", false);
         }
   }));
-
 }
 
 export { updateGraph };

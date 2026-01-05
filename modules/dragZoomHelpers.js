@@ -53,6 +53,7 @@ function svgDragged(event) {
     newNode.nodeData.y = y;
     newNode.nodeSvg.attr("cx", x).attr("cy", y);
     d3.select(`#id_node-text_${newNode.nodeData.id}`).attr("x", x).attr("y", y);
+    d3.select(`#id_node-back_${newNode.nodeData.id}`).attr("cx", x).attr("cy", y);
   } else {
     const transform = d3.zoomTransform(svgContainer.node());
     const dx = shift.x + event.x - initial.x;
@@ -65,7 +66,7 @@ function svgDragged(event) {
 
 function svgDragend(event, d) {
   if (newNode.nodeSvg && newNode.nodeData) {
-    newNode.resetCreatingData();
+    newNode.finalizeNodeCreation();
   } else {
     const dx = event.x - initial.x
     const dy = event.y - initial.y
