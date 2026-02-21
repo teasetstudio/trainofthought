@@ -1,72 +1,13 @@
-import http from 'http';
 import dotenv from 'dotenv';
 dotenv.config();
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
-import { graphState } from './graphState/index.js';
-import { Room } from './roomState/room.js';
+import { rooms } from './services/RoomsState/index.js';
+import { createHttpServer } from './services/createHttpServer.js';
  
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, '..');
-
 const PORT = Number(process.env.PORT || 3000);
 const WS_PATH = '/ws';
 
-const MIME_TYPES = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.svg': 'image/svg+xml',
-};
-
-function safeJoin(base, target) {
-  const targetPath = path.posix.normalize('/' + target).replace(/^\/+/, '');
-  const resolved = path.resolve(base, targetPath);
-  if (!resolved.startsWith(base + path.sep) && resolved !== base) {
-    throw new Error('Invalid path');
-  }
-  return resolved;
-}
-
-const server = http.createServer(async (req, res) => {
-  try {
-    if (!req.url) {
-      res.writeHead(400);
-      res.end('Bad Request');
-      return;
-    }
-
-    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-    let pathname = url.pathname;
-
-    if (pathname === WS_PATH) {
-      res.writeHead(426);
-      res.end('Upgrade Required');
-      return;
-    }
-
-    if (pathname === '/rooms') pathname = '/rooms.html';
-    if (pathname.startsWith('/room/')) {
-      pathname = '/room.html';
-    }
-    if (pathname === '/') pathname = '/index.html';
-
-    const filePath = safeJoin(projectRoot, pathname);
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
-    const content = await fs.readFile(filePath);
-    res.writeHead(200, { 'Content-Type': contentType });
-    res.end(content);
-  } catch {
-    res.writeHead(404);
-    res.end('Not Found');
-  }
-});
+const server = createHttpServer();
 
 const wss = new WebSocketServer({ server, path: WS_PATH });
 
@@ -85,24 +26,21 @@ function broadcastAll(obj) {
     client.send(payload);
   }
 }
-const rooms = new Map();
 
-// Optional optimization (only if you have MANY clients)
-// create cache variable and update cache function on room creation
-function getRoomsSnapshot() {
-  return [...rooms.values()].map(room => ({
-    id: room.id,
-    name: room.name
-  }));
-}
-let nextRoomId = 10000;
 wss.on('connection', (ws) => {
-  ws.send(JSON.stringify({ type: 'GRAPH', ...graphState.getGraphSnapshot() }));
+  console.log('New WebSocket connection established');
+  const defaultRoom = rooms.getRoom('default');
+  ws.send(JSON.stringify({ type: 'GRAPH', ...defaultRoom.graph.getGraphSnapshot() }));
+  // defaultRoom.addPeer({
+  //   id: msg.userId,
+  //   name: 'Peer',
+  //   role: 'editor',
+  // })
 
   // rooms snapshot
   ws.send(JSON.stringify({
     type: 'ROOMS_SNAPSHOT',
-    rooms: getRoomsSnapshot(),
+    rooms: rooms.getRoomsSnapshot(),
   }));
   
   ws.on('message', (raw) => {
@@ -115,26 +53,21 @@ wss.on('connection', (ws) => {
         /* ---------- ROOMS (STUBS) ---------- */
 
         case 'ROOM_CREATE': {
-          if (typeof msg.name !== 'string') return;
-
-          const room = new Room({
-            id: nextRoomId++,
+          rooms.createRoom({
             name: msg.name,
-            isPublic: true,
             ownerId: msg.userId,
+            isPublic: true,
           });
 
-          rooms.set(room.id, room);
           broadcastAll({
             type: 'ROOMS_SNAPSHOT',
-            rooms: getRoomsSnapshot()
+            rooms: rooms.getRoomsSnapshot()
           });
           return;
         }
 
         case 'ROOM_JOIN': {
-          if (typeof msg.id !== 'number') return;
-          const room = rooms.get(msg.id);
+          const room = rooms.getRoom(msg.id);
           if (!room) return;
           if (!room.canJoin(msg.userId)) return;
 
@@ -142,8 +75,6 @@ wss.on('connection', (ws) => {
             id: msg.userId,
             name: 'Peer',
           });
-
-          console.log('PEERS', [...room.peers.values()].map(peer => peer.id));
 
           // stub: no real join logic yet
           ws.send(JSON.stringify({
@@ -156,22 +87,36 @@ wss.on('connection', (ws) => {
         /* ---------- GRAPH ---------- */
 
         case 'NODE_MOVE': {
-          if (typeof msg.id !== 'number') return;
           if (typeof msg.x !== 'number' || typeof msg.y !== 'number') return;
-          if (!graphState.applyNodeMove(msg)) return;
+          const roomId = msg.roomId || 'default';
+          const room = rooms.getRoom(roomId);
+          if (!room) return;
+          if (!room.moveNode(msg.userId, msg)) return;
           broadcast(ws, msg);
           return;
         }
         case 'NODE_CREATE': {
           if (!msg.node || typeof msg.node !== 'object') return;
-          if (!graphState.applyNodeCreate(msg)) return;
+          const roomId = msg.roomId || 'default';
+          const room = rooms.getRoom(roomId);
+          if (!room) return;
+          if (!room.createNode(msg.userId, msg)) return;
+          console.log('2')
+
           broadcast(ws, msg);
           return;
         }
         case 'NODE_CONTENT': {
-          if (typeof msg.id !== 'number') return;
+          console.log('0')
+
           if (typeof msg.content !== 'string') return;
-          if (!graphState.applyNodeContent(msg)) return;
+          console.log('1')
+
+          const roomId = msg.roomId || 'default';
+          const room = rooms.getRoom(roomId);
+          if (!room) return;
+          if (!room.updateNodeContent(msg.userId, msg)) return;
+          console.log('5')
           broadcast(ws, msg);
           return;
         }

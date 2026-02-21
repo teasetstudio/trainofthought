@@ -50,8 +50,9 @@ export class Room {
   /* ---------- permissions ---------- */
 
   canEdit(peerId) {
-    const peer = this.peers.get(peerId);
-    return peer?.canEdit() ?? false;
+    // const peer = this.peers.get(peerId);
+    // return peer?.canEdit() ?? false;
+    return true;
   }
 
   /* ---------- graph façade ---------- */
