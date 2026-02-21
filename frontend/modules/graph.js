@@ -1,6 +1,7 @@
 import { data, calculateEdgePosition } from './services/data.js';
 import { newNode } from './services/newNode.js';
 import { svgContainer } from './svg.js';
+import { WEB_SOCKET_URL } from '../const/index.js';
 
 let ws;
 let lastMoveSentAt = 0;
@@ -10,10 +11,7 @@ function ensureWebSocket() {
     return ws;
   }
 
-  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const host = 'localhost:3000';
-  const url = `${protocol}://${host}/ws`;
-  ws = new WebSocket(url);
+  ws = new WebSocket(WEB_SOCKET_URL);
 
   ws.addEventListener('message', (event) => {
     try {

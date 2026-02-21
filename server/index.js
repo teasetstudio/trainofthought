@@ -1,4 +1,6 @@
 import http from 'http';
+import dotenv from 'dotenv';
+dotenv.config();
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';

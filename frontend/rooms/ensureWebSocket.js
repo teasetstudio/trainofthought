@@ -1,4 +1,5 @@
 import { getUserId } from '../utils/getUserId.js';
+import { WEB_SOCKET_URL } from '../const/index.js';
 
 let ws;
 let rooms = [];
@@ -11,10 +12,7 @@ export function ensureWebSocket() {
     return ws;
   }
 
-  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const host = 'localhost:3000';
-  const url = `${protocol}://${host}/ws`;
-  ws = new WebSocket(url);
+  ws = new WebSocket(WEB_SOCKET_URL);
 
   ws.addEventListener('message', (event) => {
     let msg;
