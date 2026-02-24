@@ -1,0 +1,503 @@
+/* ============================================================
+   TRAIN OF THOUGHT — Rooms / Studios Lobby
+   French Empire Aesthetic
+   ============================================================ */
+
+:root {
+  --gold-bright:  #e8c96e;
+  --gold-main:    #c9a84c;
+  --gold-dark:    #8b6914;
+  --gold-dim:     #a07c2e;
+  --navy:         #0b1535;
+  --navy-mid:     #142050;
+  --cream:        #f5efd5;
+  --text-light:   #f2e8c6;
+  --text-dim:     #c9b87a;
+  --shadow-gold:  rgba(201, 168, 76, 0.35);
+  --panel-bg:     rgba(10, 14, 38, 0.87);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  min-height: 100vh;
+}
+
+body.rooms-page {
+  font-family: 'IM Fell English', Georgia, serif;
+  background-color: var(--navy);
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body.rooms-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    #002395 33.333%,
+    #ffffff 33.333%,
+    #ffffff 66.666%,
+    #ed2939 66.666%
+  );
+  opacity: 0.13;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---------- Tiled Flag ---------- */
+.flag-background {
+  position: fixed;
+  inset: 0;
+  background-image: url('/public/images/france_kingdom1.png');
+  background-repeat: repeat;
+  background-size: 200px auto;
+  opacity: 0.22;
+  z-index: 0;
+  filter: sepia(40%) hue-rotate(-5deg) saturate(80%);
+}
+
+/* ---------- Vignette ---------- */
+.vignette-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 30%, rgba(8, 12, 35, 0.82) 100%),
+    linear-gradient(180deg, rgba(8,12,35,0.55) 0%, rgba(8,12,35,0.15) 40%, rgba(8,12,35,0.55) 100%);
+  z-index: 2;
+}
+
+/* ---------- Panel ---------- */
+.royal-panel {
+  position: relative;
+  z-index: 10;
+  max-width: 680px;
+  width: 90%;
+  margin: 3rem auto;
+  padding: 3rem 3.5rem;
+  background: var(--panel-bg);
+  backdrop-filter: blur(4px);
+  border: 3px solid var(--gold-main);
+  outline: 1px solid var(--gold-dark);
+  outline-offset: -10px;
+  box-shadow:
+    0 0 0 8px rgba(139, 105, 20, 0.25),
+    0 0 40px rgba(201, 168, 76, 0.18),
+    0 12px 60px rgba(0, 0, 0, 0.7),
+    inset 0 0 80px rgba(8, 12, 35, 0.5);
+  text-align: center;
+}
+
+/* ---------- Panel borders ---------- */
+.panel-border-top,
+.panel-border-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 1.8rem;
+}
+.panel-border-bottom {
+  margin-bottom: 0;
+  margin-top: 1.8rem;
+}
+.panel-border-top .fleur,
+.panel-border-bottom .fleur { color: var(--gold-main); font-size: 1.3rem; }
+.panel-border-top .crown,
+.panel-border-bottom .crown { color: var(--gold-bright); font-size: 1.6rem; text-shadow: 0 0 12px var(--shadow-gold); }
+.border-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-main), transparent);
+  max-width: 160px;
+}
+
+/* ---------- Header ---------- */
+.panel-header { margin-bottom: 1.4rem; }
+
+.fleur-row {
+  color: var(--gold-dim);
+  font-size: 1.3rem;
+  letter-spacing: 0.8rem;
+  margin-bottom: 0.9rem;
+  opacity: 0.8;
+}
+
+.page-title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  text-shadow: 0 0 20px rgba(232,201,110,0.45), 0 2px 8px rgba(0,0,0,0.8);
+  margin-bottom: 0.4rem;
+}
+
+.page-subtitle {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ---------- Ornament ---------- */
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 1.2rem 0;
+}
+.ornament-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dark), var(--gold-main), var(--gold-dark), transparent);
+  max-width: 180px;
+}
+.ornament-symbol { color: var(--gold-main); font-size: 0.8rem; }
+
+/* ---------- Rooms list ---------- */
+.rooms-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dark) transparent;
+}
+
+.rooms-list:empty + .rooms-empty { display: block; }
+.rooms-list:not(:empty) + .rooms-empty { display: none; }
+
+.rooms-empty {
+  display: none;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-style: italic;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  padding: 1rem 0;
+  opacity: 0.7;
+}
+
+/* each room entry */
+.rooms-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.2rem;
+  background: rgba(14, 22, 58, 0.6);
+  border: 1px solid var(--gold-dark);
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  color: var(--text-dim);
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+  position: relative;
+}
+
+.rooms-list li::before {
+  content: '⚜';
+  margin-right: 0.7rem;
+  color: var(--gold-dark);
+  font-size: 0.75rem;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.rooms-list li::after {
+  content: '→';
+  color: var(--gold-dark);
+  font-size: 0.9rem;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.rooms-list li:hover {
+  background: rgba(22, 34, 80, 0.85);
+  border-color: var(--gold-main);
+  color: var(--gold-bright);
+  box-shadow: 0 0 16px rgba(201,168,76,0.18), inset 0 0 20px rgba(14,22,58,0.4);
+}
+
+.rooms-list li:hover::before { color: var(--gold-main); }
+.rooms-list li:hover::after  { color: var(--gold-bright); transform: translateX(3px); }
+
+/* ---------- Actions row ---------- */
+.actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+/* Shared button base */
+.create-btn,
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid var(--gold-dark);
+  transition:
+    background 0.25s,
+    box-shadow 0.25s,
+    transform 0.18s,
+    color 0.2s;
+}
+
+/* Primary — Found a Studio */
+.create-btn {
+  color: var(--navy);
+  background: linear-gradient(135deg, var(--gold-main) 0%, var(--gold-bright) 50%, var(--gold-main) 100%);
+  box-shadow: 0 0 0 1px var(--gold-dim), 0 4px 20px rgba(201,168,76,0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.create-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.create-btn:hover {
+  background: linear-gradient(135deg, var(--gold-bright) 0%, #f5d98a 50%, var(--gold-bright) 100%);
+  box-shadow: 0 0 0 1px var(--gold-main), 0 6px 28px rgba(232,201,110,0.5);
+  transform: translateY(-2px);
+  color: #08101e;
+}
+
+.create-btn:active { transform: translateY(0); }
+.btn-fleur { font-size: 0.85rem; opacity: 0.75; }
+.create-btn:hover .btn-fleur { opacity: 1; }
+
+/* Secondary — Home */
+.back-btn {
+  color: var(--text-dim);
+  background: transparent;
+  box-shadow: none;
+}
+
+.back-btn:hover {
+  color: var(--gold-bright);
+  border-color: var(--gold-main);
+  background: rgba(14, 22, 58, 0.4);
+  transform: translateY(-1px);
+}
+
+/* ---------- Scrollbar ---------- */
+.rooms-list::-webkit-scrollbar { width: 4px; }
+.rooms-list::-webkit-scrollbar-track { background: transparent; }
+.rooms-list::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 7, 22, 0.75);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-box {
+  width: 90%;
+  max-width: 440px;
+  padding: 2rem 2.5rem;
+  background: rgba(10, 14, 38, 0.97);
+  border: 3px solid var(--gold-main);
+  outline: 1px solid var(--gold-dark);
+  outline-offset: -8px;
+  box-shadow:
+    0 0 0 8px rgba(139, 105, 20, 0.2),
+    0 20px 60px rgba(0,0,0,0.8),
+    0 0 40px rgba(201,168,76,0.12);
+  text-align: center;
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.25s ease;
+}
+
+.modal-backdrop.open .modal-box {
+  transform: translateY(0) scale(1);
+}
+
+.modal-border-top,
+.modal-border-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+}
+.modal-border-bottom {
+  margin-bottom: 0;
+  margin-top: 1.4rem;
+}
+.modal-border-top .fleur,
+.modal-border-bottom .fleur { color: var(--gold-main); font-size: 1rem; }
+.modal-border-top .crown,
+.modal-border-bottom .crown { color: var(--gold-bright); font-size: 1.2rem; }
+
+.modal-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  text-shadow: 0 0 16px rgba(232,201,110,0.35);
+  margin-bottom: 0.3rem;
+}
+
+.modal-subtitle {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 0;
+}
+
+.modal-ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+.modal-ornament .ornament-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dark), var(--gold-main), var(--gold-dark), transparent);
+}
+.modal-ornament .ornament-symbol { color: var(--gold-main); font-size: 0.75rem; }
+
+.modal-input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: rgba(14, 22, 58, 0.7);
+  border: 1px solid var(--gold-dark);
+  border-bottom: 2px solid var(--gold-main);
+  color: var(--cream);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-style: italic;
+  font-size: 1rem;
+  text-align: center;
+  letter-spacing: 0.05em;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  caret-color: var(--gold-bright);
+}
+
+.modal-input::placeholder { color: var(--gold-dark); opacity: 1; }
+
+.modal-input:focus {
+  border-color: var(--gold-main);
+  border-bottom-color: var(--gold-bright);
+  box-shadow: 0 4px 20px rgba(201,168,76,0.18);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+.modal-input.shake { animation: shake 0.35s ease; border-color: #c04040; }
+
+.modal-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+  justify-content: center;
+}
+
+.modal-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--navy);
+  background: linear-gradient(135deg, var(--gold-main) 0%, var(--gold-bright) 50%, var(--gold-main) 100%);
+  border: 2px solid var(--gold-dark);
+  box-shadow: 0 0 0 1px var(--gold-dim);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.modal-confirm:hover {
+  background: linear-gradient(135deg, var(--gold-bright) 0%, #f5d98a 50%, var(--gold-bright) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(232,201,110,0.4);
+}
+.modal-confirm:active { transform: translateY(0); }
+
+.modal-cancel {
+  padding: 0.65rem 1.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: transparent;
+  border: 2px solid var(--gold-dark);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.modal-cancel:hover {
+  color: var(--gold-bright);
+  border-color: var(--gold-main);
+  background: rgba(14,22,58,0.4);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 540px) {
+  .royal-panel { padding: 2rem 1.4rem; }
+  .flag-background { background-size: 140px auto; }
+  .fleur-row { letter-spacing: 0.5rem; }
+  .actions-row { flex-direction: column; gap: 0.8rem; }
+  .create-btn, .back-btn { width: 100%; justify-content: center; }
+}

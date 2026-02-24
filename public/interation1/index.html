@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train of Thought</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/home.css">
+</head>
+<body class="home-page">
+
+  <!-- Background layer: repeating flags -->
+  <div class="bg-flags" aria-hidden="true">
+    <div class="flag-grid">
+      <!-- 15 tricolor flag SVGs tiled -->
+      <svg class="bg-flag" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg"><rect x="0"  y="0" width="20" height="90" fill="#002395"/><rect x="20" y="0" width="20" height="90" fill="#ffffff"/><rect x="40" y="0" width="20" height="90" fill="#ED2939"/><path d="M30 18 C30 18 24 24 24 30 C24 36 30 36 30 36 C30 36 36 36 36 30 C36 24 30 18 30 18Z M30 22 L30 34 M26 27 L34 27" fill="none" stroke="#D4AF37" stroke-width="1.2"/><polygon points="30,10 31.5,15 30,14 28.5,15" fill="#D4AF37"/></svg>
+    </div>
+  </div>
+
+  <!-- Decorative vignette overlay -->
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- Gold ornamental top border -->
+  <div class="imperial-border-top" aria-hidden="true">
+    <svg viewBox="0 0 1200 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect y="0" width="1200" height="2" fill="#D4AF37" opacity="0.8"/>
+      <rect y="34" width="1200" height="2" fill="#D4AF37" opacity="0.8"/>
+      <!-- Repeating ornament -->
+      <g fill="#D4AF37" opacity="0.7">
+        <g transform="translate(0,18)">
+          <use href="#fleur" x="60"/><use href="#fleur" x="180"/><use href="#fleur" x="300"/><use href="#fleur" x="420"/><use href="#fleur" x="540"/><use href="#fleur" x="660"/><use href="#fleur" x="780"/><use href="#fleur" x="900"/><use href="#fleur" x="1020"/><use href="#fleur" x="1140"/>
+          <!-- diamond separators -->
+          <rect x="120" y="-2" width="5" height="5" transform="rotate(45,122.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+          <rect x="240" y="-2" width="5" height="5" transform="rotate(45,242.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+          <rect x="360" y="-2" width="5" height="5" transform="rotate(45,362.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+          <rect x="480" y="-2" width="5" height="5" transform="rotate(45,482.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+          <rect x="600" y="-2" width="5" height="5" transform="rotate(45,602.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+          <rect x="720" y="-2" width="5" height="5" transform="rotate(45,722.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+          <rect x="840" y="-2" width="5" height="5" transform="rotate(45,842.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+          <rect x="960" y="-2" width="5" height="5" transform="rotate(45,962.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+          <rect x="1080" y="-2" width="5" height="5" transform="rotate(45,1082.5,0.5)" fill="#D4AF37" opacity="0.6"/>
+        </g>
+      </g>
+      <defs>
+        <path id="fleur" d="M0,-8 C-2,-5 -4,-2 -2,0 C-3,2 -3,5 0,6 C3,5 3,2 2,0 C4,-2 2,-5 0,-8Z M-5,2 C-7,0 -7,-3 -5,-4 C-3,-3 -2,-1 0,0 C-2,1 -3,3 -5,2Z M5,2 C7,0 7,-3 5,-4 C3,-3 2,-1 0,0 C2,1 3,3 5,2Z"/>
+      </defs>
+    </svg>
+  </div>
+
+  <main class="hero">
+
+    <!-- Imperial eagle emblem -->
+    <div class="emblem" aria-hidden="true">
+      <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" class="eagle-svg">
+        <!-- stylised Napoleonic eagle -->
+        <g fill="#D4AF37">
+          <!-- body -->
+          <ellipse cx="60" cy="58" rx="10" ry="16"/>
+          <!-- head -->
+          <ellipse cx="60" cy="36" rx="7" ry="8"/>
+          <!-- beak -->
+          <path d="M66,37 L72,39 L66,41 Z"/>
+          <!-- eye -->
+          <circle cx="63" cy="35" r="1.5" fill="#0D1B4B"/>
+          <!-- left wing -->
+          <path d="M50,50 C30,40 10,52 8,44 C18,30 42,38 50,46Z"/>
+          <path d="M50,46 C38,35 20,28 22,20 C36,22 48,38 52,44Z"/>
+          <!-- right wing -->
+          <path d="M70,50 C90,40 110,52 112,44 C102,30 78,38 70,46Z"/>
+          <path d="M70,46 C82,35 100,28 98,20 C84,22 72,38 68,44Z"/>
+          <!-- talons -->
+          <path d="M54,74 L50,82 M54,74 L52,83 M54,74 L56,82" stroke="#D4AF37" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M66,74 L62,82 M66,74 L66,83 M66,74 L70,82" stroke="#D4AF37" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- crown -->
+          <path d="M53,28 L55,22 L58,27 L60,20 L62,27 L65,22 L67,28 Z"/>
+        </g>
+        <!-- tricolor shield on breast -->
+        <path d="M56,52 L56,64 Q60,67 64,64 L64,52 Z" fill="#002395"/>
+        <path d="M56,52 L57.5,52 L57.5,64.5 Q58.5,66.2 60,66.8 Q58.5,66.2 57.5,64.5 L56,52Z" fill="#002395"/>
+        <rect x="57.5" y="52" width="5" height="14" fill="#ffffff"/>
+        <path d="M62.5,52 L64,52 L64,64 Q62.5,66.5 60,67 Q61.5,66.2 62.5,64.5 Z" fill="#ED2939"/>
+      </svg>
+    </div>
+
+    <!-- Title -->
+    <h1 class="title">
+      <span class="title-small">— Train of —</span>
+      <span class="title-main">Thought</span>
+    </h1>
+
+    <!-- Ornamental divider -->
+    <div class="divider" aria-hidden="true">
+      <span class="divider-line"></span>
+      <span class="divider-fleur">❧</span>
+      <span class="divider-line"></span>
+    </div>
+
+    <!-- Hugo quote -->
+    <blockquote class="hugo-quote">
+      <p>
+        "The pursuit of pleasure&nbsp;— what a sorry purpose<br>
+        and what a paltry ambition!<br>
+        The brute beast pursues pleasure.<br>
+        The pursuit of thought,<br>
+        that is the soul's real triumph!"
+      </p>
+      <footer>— Victor Hugo, <cite>Les Misérables</cite></footer>
+    </blockquote>
+
+    <!-- Ornamental divider -->
+    <div class="divider" aria-hidden="true">
+      <span class="divider-line"></span>
+      <span class="divider-fleur">✦</span>
+      <span class="divider-line"></span>
+    </div>
+
+    <!-- App description -->
+    <p class="app-description">
+      A canvas for the mind. Place, connect and arrange your ideas freely —<br>
+      as Napoleon marshalled his corps, so you command your thoughts.
+    </p>
+
+    <!-- CTA -->
+    <a href="/rooms.html" class="cta-button">
+      <span class="cta-inner">Enter the Board</span>
+    </a>
+
+  </main>
+
+  <!-- Bottom border -->
+  <div class="imperial-border-bottom" aria-hidden="true">
+    <svg viewBox="0 0 1200 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <use href="#border-ornament"/>
+      <rect y="0" width="1200" height="2" fill="#D4AF37" opacity="0.8"/>
+      <rect y="34" width="1200" height="2" fill="#D4AF37" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <!-- Side flag ribbons -->
+  <div class="ribbon ribbon-left" aria-hidden="true">
+    <div class="ribbon-stripe ribbon-blue"></div>
+    <div class="ribbon-stripe ribbon-white"></div>
+    <div class="ribbon-stripe ribbon-red"></div>
+  </div>
+  <div class="ribbon ribbon-right" aria-hidden="true">
+    <div class="ribbon-stripe ribbon-blue"></div>
+    <div class="ribbon-stripe ribbon-white"></div>
+    <div class="ribbon-stripe ribbon-red"></div>
+  </div>
+
+</body>
+</html>

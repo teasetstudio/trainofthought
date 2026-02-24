@@ -28,14 +28,8 @@ function broadcastAll(obj) {
 }
 
 wss.on('connection', (ws) => {
-  console.log('New WebSocket connection established');
   const defaultRoom = rooms.getRoom('default');
-  ws.send(JSON.stringify({ type: 'GRAPH', ...defaultRoom.graph.getGraphSnapshot() }));
-  // defaultRoom.addPeer({
-  //   id: msg.userId,
-  //   name: 'Peer',
-  //   role: 'editor',
-  // })
+  // ws.send(JSON.stringify({ type: 'GRAPH', ...defaultRoom.graph.getGraphSnapshot() }));
 
   // rooms snapshot
   ws.send(JSON.stringify({
@@ -76,10 +70,10 @@ wss.on('connection', (ws) => {
             name: 'Peer',
           });
 
-          // stub: no real join logic yet
           ws.send(JSON.stringify({
             type: 'ROOM_JOINED',
-            id: msg.id
+            id: msg.id,
+            ...room.graph.getGraphSnapshot(),
           }));
           return;
         }
@@ -90,6 +84,7 @@ wss.on('connection', (ws) => {
           if (typeof msg.x !== 'number' || typeof msg.y !== 'number') return;
           const roomId = msg.roomId || 'default';
           const room = rooms.getRoom(roomId);
+          console.log('user', msg.userId);
           if (!room) return;
           if (!room.moveNode(msg.userId, msg)) return;
           broadcast(ws, msg);
@@ -101,22 +96,15 @@ wss.on('connection', (ws) => {
           const room = rooms.getRoom(roomId);
           if (!room) return;
           if (!room.createNode(msg.userId, msg)) return;
-          console.log('2')
-
           broadcast(ws, msg);
           return;
         }
         case 'NODE_CONTENT': {
-          console.log('0')
-
           if (typeof msg.content !== 'string') return;
-          console.log('1')
-
           const roomId = msg.roomId || 'default';
           const room = rooms.getRoom(roomId);
           if (!room) return;
           if (!room.updateNodeContent(msg.userId, msg)) return;
-          console.log('5')
           broadcast(ws, msg);
           return;
         }

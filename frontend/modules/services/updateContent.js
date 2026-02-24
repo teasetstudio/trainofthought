@@ -1,4 +1,5 @@
 import { updateNodeContent } from '../svgUtils.js';
+import { sendNodeContent } from '../graph.js';
 
 export function updateContentModal(nodeId, currentValue) {
   // Create and show modal
@@ -70,6 +71,7 @@ export function updateContentModal(nodeId, currentValue) {
     .on('click', () => {
       const nodeText = textarea.node().value;
       updateNodeContent(nodeId, nodeText);
+      sendNodeContent(nodeId, nodeText);
       modal.remove();
       d3.select('body').on('click.node-modal', null);
     });

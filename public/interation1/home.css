@@ -1,0 +1,358 @@
+/* ─── reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── graph / board styles (unchanged) ──────────────────────── */
+.node {
+  fill: transparent;
+  stroke: #494949ff;
+  stroke-width: 2px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.node-back {
+  fill: #ed95ddff;
+}
+.node-link {
+  stroke-opacity: 0.6;
+  fill: none;
+  stroke: #999;
+  stroke-width: 2px;
+  marker-end: url(#arrow);
+}
+.arrow {
+  fill: #999;
+}
+.node.selected {
+  stroke: red;
+  stroke-width: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME PAGE — French First Empire Theme
+   Palette:
+     Imperial Blue   #002395
+     Gold            #D4AF37
+     Crimson         #ED2939
+     Parchment       #F4E4C1
+     Deep Navy       #0D1B4B
+     Dark Gold       #A07820
+   ══════════════════════════════════════════════════════════════ */
+
+/* ─── custom properties ──────────────────────────────────────── */
+.home-page {
+  --blue:      #002395;
+  --gold:      #D4AF37;
+  --gold-dark: #A07820;
+  --gold-pale: #F2D87A;
+  --red:       #ED2939;
+  --navy:      #0D1B4B;
+  --parchment: #F4E4C1;
+  --bg:        #060F2E;
+}
+
+/* ─── base ───────────────────────────────────────────────────── */
+.home-page {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--parchment);
+  font-family: 'EB Garamond', Georgia, serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── background flag grid ───────────────────────────────────── */
+.bg-flags {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.flag-grid {
+  width: 100%;
+  height: 100%;
+  /* tile the flag SVG as a background image */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 135'%3E%3Crect x='0' y='0' width='30' height='135' fill='%23002395' opacity='0.55'/%3E%3Crect x='30' y='0' width='30' height='135' fill='%23ffffff' opacity='0.55'/%3E%3Crect x='60' y='0' width='30' height='135' fill='%23ED2939' opacity='0.55'/%3E%3Cpath d='M45 30 C41 35 39 41 40 46 C41 51 45 51 45 51 C45 51 49 51 50 46 C51 41 49 35 45 30Z' fill='%23D4AF37' opacity='0.7'/%3E%3Cpath d='M37 40 C33 37 33 31 37 29 C39 31 41 34 45 36 C41 38 39 41 37 40Z' fill='%23D4AF37' opacity='0.7'/%3E%3Cpath d='M53 40 C57 37 57 31 53 29 C51 31 49 34 45 36 C49 38 51 41 53 40Z' fill='%23D4AF37' opacity='0.7'/%3E%3Cline x1='45' y1='50' x2='45' y2='60' stroke='%23D4AF37' stroke-width='1.5' opacity='0.7'/%3E%3Cellipse cx='45' cy='62' rx='5' ry='3' fill='%23D4AF37' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 90px 135px;
+  background-repeat: repeat;
+  opacity: 0.13;
+}
+
+/* ─── vignette ───────────────────────────────────────────────── */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    transparent 30%,
+    rgba(6, 15, 46, 0.75) 100%
+  );
+}
+
+/* ─── top / bottom ornamental borders ───────────────────────── */
+.imperial-border-top,
+.imperial-border-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.imperial-border-top  { top: 0;    height: 36px; }
+.imperial-border-bottom { bottom: 0; height: 36px; }
+.imperial-border-top svg,
+.imperial-border-bottom svg {
+  width: 100%;
+  height: 36px;
+  display: block;
+}
+
+/* ─── side ribbons ───────────────────────────────────────────── */
+.ribbon {
+  position: fixed;
+  top: 36px;
+  bottom: 36px;
+  width: 18px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+.ribbon-left  { left: 0; }
+.ribbon-right { right: 0; }
+
+.ribbon-stripe {
+  flex: 1;
+}
+.ribbon-blue  { background: #002395; opacity: 0.75; }
+.ribbon-white { background: #ffffff; opacity: 0.75; }
+.ribbon-red   { background: #ED2939; opacity: 0.75; }
+
+/* repeating pattern down the ribbon */
+.ribbon {
+  background-image: repeating-linear-gradient(
+    180deg,
+    #002395 0px,    #002395 33.33%,
+    #ffffff 33.33%, #ffffff 66.66%,
+    #ED2939 66.66%, #ED2939 100%
+  );
+  background-size: 100% 48px;
+  opacity: 0.5;
+}
+/* override flex children since we use bg now */
+.ribbon-stripe { display: none; }
+
+/* ─── main hero ──────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px 80px;
+  text-align: center;
+  gap: 0;
+}
+
+/* ─── eagle emblem ───────────────────────────────────────────── */
+.emblem {
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.5));
+  animation: float 6s ease-in-out infinite;
+}
+.eagle-svg {
+  width: 120px;
+  height: 100px;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0);   }
+  50%       { transform: translateY(-8px); }
+}
+
+/* ─── title ──────────────────────────────────────────────────── */
+.title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.title-small {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: var(--gold);
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.title-main {
+  font-size: clamp(3rem, 9vw, 7rem);
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow:
+    0 0 40px rgba(212, 175, 55, 0.6),
+    0 2px 4px rgba(0,0,0,0.8);
+  line-height: 1;
+}
+
+/* ─── ornamental divider ─────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  width: min(560px, 90vw);
+  gap: 16px;
+  margin: 22px 0;
+}
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.6;
+}
+.divider-fleur {
+  color: var(--gold);
+  font-size: 1.4rem;
+  opacity: 0.85;
+  line-height: 1;
+}
+
+/* ─── Hugo quote ─────────────────────────────────────────────── */
+.hugo-quote {
+  margin: 0;
+  padding: 32px 48px;
+  max-width: min(680px, 92vw);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(0, 35, 149, 0.18);
+  backdrop-filter: blur(2px);
+  position: relative;
+
+  /* corner ornaments */
+  --corner-size: 18px;
+  --corner-color: rgba(212, 175, 55, 0.55);
+}
+
+/* corner lines */
+.hugo-quote::before,
+.hugo-quote::after {
+  content: '';
+  position: absolute;
+  width: var(--corner-size);
+  height: var(--corner-size);
+  border-color: var(--gold);
+  border-style: solid;
+  opacity: 0.65;
+}
+.hugo-quote::before {
+  top: -1px; left: -1px;
+  border-width: 2px 0 0 2px;
+}
+.hugo-quote::after {
+  bottom: -1px; right: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+.hugo-quote p {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  font-style: italic;
+  line-height: 1.85;
+  color: var(--parchment);
+  margin: 0 0 20px 0;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+.hugo-quote footer {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+.hugo-quote cite {
+  font-style: italic;
+  font-family: 'EB Garamond', serif;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1.05em;
+}
+
+/* ─── app description ────────────────────────────────────────── */
+.app-description {
+  font-family: 'EB Garamond', serif;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: #c8d6f0;
+  max-width: min(560px, 90vw);
+  line-height: 1.75;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* ─── CTA button ─────────────────────────────────────────────── */
+.cta-button {
+  display: inline-block;
+  margin-top: 36px;
+  text-decoration: none;
+  position: relative;
+}
+.cta-inner {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--navy);
+  background: linear-gradient(
+    135deg,
+    #F2D87A 0%,
+    #D4AF37 35%,
+    #A07820 60%,
+    #D4AF37 80%,
+    #F2D87A 100%
+  );
+  background-size: 200% 200%;
+  padding: 14px 48px;
+  border: 1px solid var(--gold-dark);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.3),
+    0 4px 24px rgba(160, 120, 32, 0.5),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0% calc(100% - 12px), 0% 12px);
+  transition: background-position 0.4s ease, box-shadow 0.3s ease, transform 0.15s ease;
+  animation: shimmer 4s ease infinite;
+}
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%;   }
+  50%       { background-position: 100% 50%; }
+}
+.cta-button:hover .cta-inner {
+  background-position: 100% 100%;
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.6),
+    0 6px 36px rgba(212, 175, 55, 0.7),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+  transform: translateY(-2px);
+}
+.cta-button:active .cta-inner {
+  transform: translateY(0);
+}
+
+/* ─── responsive ─────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .ribbon { width: 10px; }
+  .hugo-quote { padding: 22px 24px; }
+  .flag-grid { background-size: 60px 90px; }
+}

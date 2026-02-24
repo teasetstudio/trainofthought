@@ -30,7 +30,7 @@ export function ensureWebSocket() {
         break;
 
       case 'ROOM_JOINED':
-        alert(`Joined room ${msg.id}`);
+        window.location.href = `/room/${msg.id}`;
         break;
     }
   });
@@ -58,16 +58,3 @@ function renderRooms(rooms) {
   }
 }
 
-// stub create
-window.createRoom = function () {
-  const name = prompt('Room name?');
-  if (!name) return;
-
-  const socket = ensureWebSocket()
-
-  socket.send(JSON.stringify({
-    type: 'ROOM_CREATE',
-    name,
-    userId
-  }));
-};

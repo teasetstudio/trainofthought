@@ -2,25 +2,38 @@ import { data, calculateEdgePosition } from './services/data.js';
 import { newNode } from './services/newNode.js';
 import { svgContainer } from './svg.js';
 import { WEB_SOCKET_URL } from '../const/index.js';
+import { updateNodeContent } from './svgUtils.js';
+import { getUserId } from '../utils/getUserId.js';
+
+const userId = getUserId();
 
 let ws;
 let lastMoveSentAt = 0;
 
-function ensureWebSocket() {
+export function ensureWebSocket() {
   if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
     return ws;
   }
 
   ws = new WebSocket(WEB_SOCKET_URL);
 
+  ws.addEventListener('open', () => {
+    console.log('WebSocket connected');
+  });
+
+  ws.addEventListener('close', () => {
+    console.log('WebSocket disconnected');
+  });
+
   ws.addEventListener('message', (event) => {
     try {
       const msg = JSON.parse(event.data);
       if (!msg || typeof msg !== 'object') return;
 
-      if (msg.type === 'GRAPH') {
+      if (msg.type === 'GRAPH' || msg.type === 'ROOM_JOINED') {
         if (typeof data.setGraph === 'function') {
-          console.log('Setting graph', msg.nodes, msg.links);
+          console.log('nodes', msg.nodes);
+          console.log('links', msg.links);
           data.setGraph(msg.nodes, msg.links);
           updateGraph();
         }
@@ -28,11 +41,23 @@ function ensureWebSocket() {
         applyRemoteNodeMove(msg);
       } else if (msg.type === 'NODE_CREATE') {
         applyRemoteNodeCreate(msg);
+      } else if (msg.type === 'NODE_CONTENT') {
+        updateNodeContent(msg.id, msg.content);
       }
     } catch {}
   });
 
   return ws;
+}
+
+export function sendRequestRoomGraph(roomId) {
+  setTimeout(() => {
+    const socket = ensureWebSocket();
+    console.log('2')
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+    console.log('3')
+    socket.send(JSON.stringify({ type: 'ROOM_JOIN', id: roomId, userId }));
+  }, 1000);
 }
 
 function sendNodeMove(id, x, y) {
@@ -43,14 +68,20 @@ function sendNodeMove(id, x, y) {
   if (now - lastMoveSentAt < 25) return;
   lastMoveSentAt = now;
   
-  socket.send(JSON.stringify({ type: 'NODE_MOVE', id, x, y }));
+  socket.send(JSON.stringify({ type: 'NODE_MOVE', id, x, y, userId }));
 }
 
 function sendNodeCreate(node, link) {
   const socket = ensureWebSocket();
   if (!socket || socket.readyState !== WebSocket.OPEN) return;
   if (!node || typeof node !== 'object') return;
-  socket.send(JSON.stringify({ type: 'NODE_CREATE', node, link }));
+  socket.send(JSON.stringify({ type: 'NODE_CREATE', node, link, userId }));
+}
+
+export function sendNodeContent(id, content) {
+  const socket = ensureWebSocket();
+  if (!socket || socket.readyState !== WebSocket.OPEN) return;
+  socket.send(JSON.stringify({ type: 'NODE_CONTENT', id, content, userId }));
 }
 
 function applyRemoteNodeCreate(msg) {
