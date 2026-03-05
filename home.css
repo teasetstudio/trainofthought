@@ -86,6 +86,22 @@ body.home-page::before {
   z-index: 2;
 }
 
+/* ---------- Fog Canvas ---------- */
+#fog-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ---------- Dust Particle Canvas ---------- */
+#dust-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
 /* ---------- Central Royal Panel ---------- */
 .royal-panel {
   position: relative;
@@ -158,6 +174,21 @@ body.home-page::before {
   opacity: 0.8;
 }
 
+@keyframes title-glow-pulse {
+  0%, 100% {
+    text-shadow:
+      0 0 18px rgba(232, 201, 110, 0.45),
+      0 0 40px rgba(232, 201, 110, 0.15),
+      0 2px 8px rgba(0,0,0,0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 28px rgba(232, 201, 110, 0.75),
+      0 0 60px rgba(232, 201, 110, 0.35),
+      0 2px 8px rgba(0,0,0,0.8);
+  }
+}
+
 .app-title {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
   font-weight: 700;
@@ -166,8 +197,10 @@ body.home-page::before {
   text-transform: uppercase;
   color: var(--gold-bright);
   text-shadow:
-    0 0 20px rgba(232, 201, 110, 0.5),
+    0 0 18px rgba(232, 201, 110, 0.45),
+    0 0 40px rgba(232, 201, 110, 0.15),
     0 2px 8px rgba(0,0,0,0.8);
+  animation: title-glow-pulse 10s ease-in-out infinite;
   line-height: 1.15;
   margin-bottom: 0.6rem;
 }
@@ -280,6 +313,18 @@ body.home-page::before {
   margin: 0.5rem 0 2rem;
 }
 
+@keyframes border-shimmer {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  15% {
+    transform: scale(1.015) rotate(-0.4deg);
+  }
+  75% {
+    transform: scale(0.985) rotate(0.4deg);
+  }
+}
+
 /* ---------- Enter Button ---------- */
 .enter-btn {
   display: inline-flex;
@@ -299,6 +344,7 @@ body.home-page::before {
     0 0 0 1px var(--gold-dim),
     0 4px 20px rgba(201, 168, 76, 0.4),
     inset 0 1px 0 rgba(255,255,255,0.2);
+  animation: border-shimmer 10s ease-in-out infinite;
   transition:
     background 0.3s ease,
     box-shadow 0.3s ease,
@@ -327,6 +373,7 @@ body.home-page::before {
   transform: translateY(-2px);
   letter-spacing: 0.28em;
   color: #0a0d1e;
+  animation-play-state: paused;
 }
 
 .enter-btn:active {

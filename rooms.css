@@ -62,7 +62,7 @@ body.rooms-page::before {
   inset: 0;
   background-image: url('/public/images/france_kingdom1.png');
   background-repeat: repeat;
-  background-size: 200px auto;
+  background-size: 800px auto;
   opacity: 0.22;
   z-index: 0;
   filter: sepia(40%) hue-rotate(-5deg) saturate(80%);

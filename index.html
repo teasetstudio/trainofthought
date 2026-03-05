@@ -9,11 +9,29 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/home.css">
+  <link rel="stylesheet" href="/fog.css">
 </head>
 <body class="home-page">
 
   <div class="flag-background"></div>
   <div class="vignette-overlay"></div>
+  <!-- FOG -->
+  <div class="fogwrapper">
+    <div id="foglayer_01" class="fog">
+      <div class="image01"></div>
+      <div class="image02"></div>
+    </div>
+    <div id="foglayer_02" class="fog">
+      <div class="image01"></div>
+      <div class="image02"></div>
+    </div>
+    <div id="foglayer_03" class="fog">
+      <div class="image01"></div>
+      <div class="image02"></div>
+    </div>
+  </div>
+  <!-- Particles -->
+  <canvas id="dust-canvas"></canvas>
 
   <main class="royal-panel">
 
@@ -79,5 +97,6 @@
 
   </main>
 
+  <script src="/dust.js"></script>
 </body>
 </html>

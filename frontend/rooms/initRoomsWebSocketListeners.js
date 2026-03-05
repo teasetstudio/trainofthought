@@ -1,20 +1,17 @@
 import { getUserId } from '../utils/getUserId.js';
-import { WEB_SOCKET_URL } from '../const/index.js';
+import { getWebSocketClient } from '../utils/getWebSocketClient.js';
 
-let ws;
-let rooms = [];
 const roomsEl = document.getElementById('rooms');
-
 const userId = getUserId();
 
-export function ensureWebSocket() {
-  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
-    return ws;
-  }
+export async function initRoomsWebSocketListeners() {
+  const ws = await getWebSocketClient();
 
-  ws = new WebSocket(WEB_SOCKET_URL);
+  ws.addEventListener('close', () => {
+    console.log('WebSocket disconnected');
+  }, { once: true });
 
-  ws.addEventListener('message', (event) => {
+  ws.addEventListener('message', async (event) => {
     let msg;
     try {
       msg = JSON.parse(event.data);
@@ -24,9 +21,7 @@ export function ensureWebSocket() {
 
     switch (msg.type) {
       case 'ROOMS_SNAPSHOT':
-        rooms = msg.rooms;
-        console.log('ROOMS_SNAPSHOT', rooms);
-        renderRooms(rooms);
+        await renderRooms(msg.rooms);
         break;
 
       case 'ROOM_JOINED':
@@ -34,13 +29,11 @@ export function ensureWebSocket() {
         break;
     }
   });
-
-  return ws;
 }
 
-function renderRooms(rooms) {
+async function renderRooms(rooms) {
   roomsEl.innerHTML = '';
-  const socket = ensureWebSocket()
+  const socket = await getWebSocketClient();
 
   for (const room of rooms) {
     const li = document.createElement('li');
@@ -50,11 +43,10 @@ function renderRooms(rooms) {
       socket.send(JSON.stringify({
         type: 'ROOM_JOIN',
         id: room.id,
-        userId
+        userId,
       }));
     });
 
     roomsEl.appendChild(li);
   }
 }
-
