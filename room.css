@@ -4,13 +4,20 @@ body, html {
 }
 .node {
   fill: transparent;
-  stroke: #494949ff;
-  stroke-width: 2px;
+  stroke: #c8c8d8;
+  stroke-width: 1.5px;
   cursor: pointer;
-  opacity: 0.6;
 }
 .node-back {
-  fill: #ed95ddff;
+  fill: #f9f9fb;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.10));
+}
+.node-text {
+  fill: #2c2c3a;
+  font-size: 13px;
+  font-family: inherit;
+  pointer-events: none;
+  dominant-baseline: middle;
 }
 .node-link {
   stroke-opacity: 0.6;
@@ -18,11 +25,72 @@ body, html {
   stroke: #999;
   stroke-width: 2px;
   marker-end: url(#arrow);
+  cursor: pointer;
+}
+.node-link:hover {
+  stroke: #c0392b;
+  stroke-opacity: 0.85;
+}
+.node-link.selected {
+  stroke: #4f7cff;
+  stroke-opacity: 0.95;
+  stroke-width: 3px;
 }
 .arrow {
   fill: #999;
 }
 .node.selected {
-  stroke: red;
+  stroke: #4f7cff;
   stroke-width: 2px;
+}
+.node.linking-source {
+  stroke: #4f7cff;
+  stroke-width: 2.5px;
+}
+.node.linking-target {
+  stroke: #3a63d4;
+  stroke-width: 2.5px;
+  stroke-dasharray: 6 3;
+}
+.node-overlay__btn {
+  fill: #4f7cff;
+  cursor: pointer;
+}
+.node-overlay__btn:hover {
+  fill: #3a63d4;
+}
+.node-overlay__btn-dot {
+  fill: #ffffff;
+}
+.node-overlay__panel-bg {
+  fill: #ffffff;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+}
+.node-overlay__panel-item {
+  fill: #2c2c3a;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.node-overlay__panel-item:hover {
+  fill: #4f7cff;
+}
+.node-overlay__panel-item--danger {
+  fill: #c0392b;
+}
+.node-overlay__panel-item--danger:hover {
+  fill: #e74c3c;
+}
+.node-overlay__panel-item--tip {
+  fill: #aaaaaa;
+  font-size: 11px;
+  cursor: default;
+}
+.node-link-temp {
+  stroke: #4f7cff;
+  stroke-width: 2px;
+  stroke-dasharray: 6 4;
+  stroke-opacity: 0.7;
+  fill: none;
+  pointer-events: none;
 }

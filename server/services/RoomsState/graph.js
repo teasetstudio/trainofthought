@@ -1,8 +1,8 @@
 export const defaultGraphState = {
   nodes: [
-    { id: 1, x: 100, y: 100, r: 10, content: 'Node 1' },
-    { id: 2, x: 200, y: 200, r: 20, content: 'Node 2' },
-    { id: 3, x: 300, y: 300, r: 30, content: 'Node 33' },
+    { id: 1, x: 100, y: 100, w: 160, h: 46, content: 'Node 1' },
+    { id: 2, x: 200, y: 200, w: 160, h: 46, content: 'Node 2' },
+    { id: 3, x: 300, y: 300, w: 160, h: 46, content: 'Node 33' },
   ],
   links: [
     { source: 1, target: 2 },
@@ -32,14 +32,14 @@ export class GraphData {
   });
 
   applyNodeMove = (msg) => {
-    const node = this.nodes.get(msg.id);
+    const node = this.nodes.get(msg.nodeId);
     if (!node) return false;
     node.x = msg.x;
     node.y = msg.y;
     return true;
   };
 
-  applyNodeCreate(msg) {
+  applyNodeCreate = (msg) => {
     const { node, link } = msg;
 
     if (!node || typeof node.id !== 'number') return false;
@@ -64,9 +64,37 @@ export class GraphData {
   }
 
   applyNodeContent = (msg) => {
-    const node = this.nodes.get(msg.id);
+    const node = this.nodes.get(msg.nodeId);
     if (!node) return false;
     node.content = msg.content;
     return true;
+  };
+
+  applyNodeDelete = (msg) => {
+    if (!this.nodes.has(msg.nodeId)) return false;
+    this.nodes.delete(msg.nodeId);
+    this.links = this.links.filter(
+      l => l.source !== msg.nodeId && l.target !== msg.nodeId
+    );
+    return true;
+  };
+
+  applyLinkCreate = (msg) => {
+    const { source, target } = msg;
+    if (typeof source !== 'number' || typeof target !== 'number') return false;
+    if (!this.nodes.has(source) || !this.nodes.has(target)) return false;
+    if (this.links.some(l => l.source === source && l.target === target)) return false;
+    this.links.push({ source, target });
+    return true;
+  };
+
+  applyLinkDelete = (msg) => {
+    const { source, target } = msg;
+    if (typeof source !== 'number' || typeof target !== 'number') return false;
+
+    const initialCount = this.links.length;
+    this.links = this.links.filter(l => !(l.source === source && l.target === target));
+
+    return this.links.length !== initialCount;
   };
 }

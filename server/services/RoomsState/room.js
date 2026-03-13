@@ -72,6 +72,21 @@ export class Room {
     return this.graph.applyNodeContent(msg);
   }
 
+  deleteNode(peerId, msg) {
+    if (!this.canEdit(peerId)) return false;
+    return this.graph.applyNodeDelete(msg);
+  }
+
+  createLink(peerId, msg) {
+    if (!this.canEdit(peerId)) return false;
+    return this.graph.applyLinkCreate(msg);
+  }
+
+  deleteLink(peerId, msg) {
+    if (!this.canEdit(peerId)) return false;
+    return this.graph.applyLinkDelete(msg);
+  }
+
   /* ---------- snapshot ---------- */
 
   getSnapshot() {

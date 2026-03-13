@@ -21,17 +21,17 @@ export async function initRoomsWebSocketListeners() {
 
     switch (msg.type) {
       case 'ROOMS_SNAPSHOT':
-        await renderRooms(msg.rooms);
+        await renderRoomList(msg.rooms);
         break;
 
       case 'ROOM_JOINED':
-        window.location.href = `/room/${msg.id}`;
+        window.location.href = `/room/${msg.roomId}`;
         break;
     }
   });
 }
 
-async function renderRooms(rooms) {
+async function renderRoomList(rooms) {
   roomsEl.innerHTML = '';
   const socket = await getWebSocketClient();
 
@@ -42,7 +42,7 @@ async function renderRooms(rooms) {
     li.addEventListener('click', () => {
       socket.send(JSON.stringify({
         type: 'ROOM_JOIN',
-        id: room.id,
+        roomId: room.id,
         userId,
       }));
     });

@@ -28,9 +28,6 @@ function broadcastAll(obj) {
 }
 
 wss.on('connection', (ws) => {
-  const defaultRoom = rooms.getRoom('default');
-  // ws.send(JSON.stringify({ type: 'GRAPH', ...defaultRoom.graph.getGraphSnapshot() }));
-
   // rooms snapshot
   ws.send(JSON.stringify({
     type: 'ROOMS_SNAPSHOT',
@@ -61,7 +58,7 @@ wss.on('connection', (ws) => {
         }
 
         case 'ROOM_JOIN': {
-          const room = rooms.getRoom(msg.id);
+          const room = rooms.getRoom(msg.roomId);
           if (!room) return;
           if (!room.canJoin(msg.userId)) return;
 
@@ -72,7 +69,7 @@ wss.on('connection', (ws) => {
 
           ws.send(JSON.stringify({
             type: 'ROOM_JOINED',
-            id: msg.id,
+            roomId: msg.roomId,
             ...room.graph.getGraphSnapshot(),
           }));
           return;
@@ -82,9 +79,7 @@ wss.on('connection', (ws) => {
 
         case 'NODE_MOVE': {
           if (typeof msg.x !== 'number' || typeof msg.y !== 'number') return;
-          const roomId = msg.roomId || 'default';
-          const room = rooms.getRoom(roomId);
-          console.log('user', msg.userId);
+          const room = rooms.getRoom(msg.roomId);
           if (!room) return;
           if (!room.moveNode(msg.userId, msg)) return;
           broadcast(ws, msg);
@@ -92,8 +87,7 @@ wss.on('connection', (ws) => {
         }
         case 'NODE_CREATE': {
           if (!msg.node || typeof msg.node !== 'object') return;
-          const roomId = msg.roomId || 'default';
-          const room = rooms.getRoom(roomId);
+          const room = rooms.getRoom(msg.roomId);
           if (!room) return;
           if (!room.createNode(msg.userId, msg)) return;
           broadcast(ws, msg);
@@ -101,10 +95,33 @@ wss.on('connection', (ws) => {
         }
         case 'NODE_CONTENT': {
           if (typeof msg.content !== 'string') return;
-          const roomId = msg.roomId || 'default';
-          const room = rooms.getRoom(roomId);
+          const room = rooms.getRoom(msg.roomId);
           if (!room) return;
           if (!room.updateNodeContent(msg.userId, msg)) return;
+          broadcast(ws, msg);
+          return;
+        }
+        case 'NODE_DELETE': {
+          if (typeof msg.nodeId !== 'number') return;
+          const room = rooms.getRoom(msg.roomId);
+          if (!room) return;
+          if (!room.deleteNode(msg.userId, msg)) return;
+          broadcast(ws, msg);
+          return;
+        }
+        case 'LINK_CREATE': {
+          if (typeof msg.source !== 'number' || typeof msg.target !== 'number') return;
+          const room = rooms.getRoom(msg.roomId);
+          if (!room) return;
+          if (!room.createLink(msg.userId, msg)) return;
+          broadcast(ws, msg);
+          return;
+        }
+        case 'LINK_DELETE': {
+          if (typeof msg.source !== 'number' || typeof msg.target !== 'number') return;
+          const room = rooms.getRoom(msg.roomId);
+          if (!room) return;
+          if (!room.deleteLink(msg.userId, msg)) return;
           broadcast(ws, msg);
           return;
         }
