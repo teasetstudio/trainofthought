@@ -4,6 +4,12 @@ import { updateSvgGraph } from './svg/index.js';
 import { updateContentModal } from './components/updateContentModal.js';
 import { computeNodeWidth, computeNodeHeight } from './nodeLayout.js';
 
+function getNextNodeId() {
+  return data.getNodes().reduce((maxNodeId, node) => {
+    return Math.max(maxNodeId, node.id);
+  }, 0) + 1;
+}
+
 /**
  * Tracks the state of a node currently being created via alt+drag.
  *
@@ -46,10 +52,11 @@ class PendingNode {
       [x, y] = d3.pointer(event, svgContainer.node());
     }
 
-    const content = `Node ${data.nodes.length + 1}`;
+    const nodeId = getNextNodeId();
+    const content = `Node ${nodeId}`;
     const w = computeNodeWidth(content);
     const node = {
-      id: data.nodes.length + 1,
+      id: nodeId,
       x,
       y,
       w,
