@@ -13,6 +13,7 @@ export function enterFolder(nodeId) {
   _currentFolderId = nodeId;
   updateSvgGraph();
   renderBreadcrumb();
+  renderParentContextCard();
 }
 
 export function exitFolder() {
@@ -21,12 +22,19 @@ export function exitFolder() {
   _currentFolderId = currentFolder?.parentId ?? null;
   updateSvgGraph();
   renderBreadcrumb();
+  renderParentContextCard();
 }
 
 export function goToRoot() {
   _currentFolderId = null;
   updateSvgGraph();
   renderBreadcrumb();
+  renderParentContextCard();
+}
+
+export function getCurrentParentNode() {
+  if (_currentFolderId === null) return null;
+  return data.findNodeById(_currentFolderId) ?? null;
 }
 
 /**
@@ -36,6 +44,7 @@ export function goToRoot() {
 export function getVisibleGraph() {
   const allNodes = data.getNodes();
   const allLinks = data.getLinks();
+  const currentParent = getCurrentParentNode();
 
   // direct children of current folder
   const directChildren = allNodes.filter(
@@ -62,6 +71,19 @@ export function getVisibleGraph() {
 
   const visibleIds = new Set([...directChildIds, ...referencedIds]);
   const visibleNodes = allNodes.filter(n => visibleIds.has(n.id));
+
+  if (currentParent) {
+    const pinnedParentNode = {
+      ...currentParent,
+      x: Math.max(160, Math.round(window.innerWidth / 2)),
+      y: 128,
+      isPinnedParent: true,
+    };
+
+    visibleNodes.unshift(pinnedParentNode);
+    visibleIds.add(currentParent.id);
+  }
+
   const visibleLinks = allLinks.filter(
     l => visibleIds.has(l.source) && visibleIds.has(l.target)
   );
@@ -130,4 +152,11 @@ export function renderBreadcrumb() {
   });
 
   bar.style.display = (_currentFolderId === null && path.length === 0) ? 'none' : 'flex';
+}
+
+export function renderParentContextCard() {
+  const card = document.getElementById('parent-context-card');
+  if (!card) return;
+  card.style.display = 'none';
+  card.replaceChildren();
 }

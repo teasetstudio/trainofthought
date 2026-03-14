@@ -6,7 +6,7 @@ import { getUserId, getRoomIdFromPath } from '../../utils/index.js';
 import { sendNodeDelete, sendLinkCreate } from '../webSocketSendEvents.js';
 import { isLinking, startLinking, updateLinkingLine, updateLinkingHover, finishLinking } from './linkingState.js';
 import { getSingleSelectedNodeId } from './selectionState.js';
-import { enterFolder } from '../folderState.js';
+import { enterFolder, getCurrentFolderId } from '../folderState.js';
 
 const _userId = getUserId();
 const _roomId = getRoomIdFromPath();
@@ -17,6 +17,9 @@ let _linkModeCleanup = null;
 let _overlayNodeId = null;
 
 const BTN_R = 11;
+
+const PINNED_PARENT_MIN_X = 160;
+const PINNED_PARENT_Y = 128;
 
 function _stopOverlayLinkMode() {
   if (_linkModeCleanup) {
@@ -88,6 +91,22 @@ function _btnPos(node) {
   };
 }
 
+function _getOverlayNode(nodeId) {
+  const node = data.findNodeById(nodeId);
+  if (!node) return null;
+
+  if (nodeId === getCurrentFolderId()) {
+    return {
+      ...node,
+      x: Math.max(PINNED_PARENT_MIN_X, Math.round(window.innerWidth / 2)),
+      y: PINNED_PARENT_Y,
+      isPinnedParent: true,
+    };
+  }
+
+  return node;
+}
+
 export function showNodeOverlay(node) {
   if (!node) {
     syncNodeOverlay();
@@ -132,7 +151,7 @@ export function syncNodeOverlay() {
     return;
   }
 
-  const selectedNode = data.findNodeById(selectedNodeId);
+  const selectedNode = _getOverlayNode(selectedNodeId);
   if (!selectedNode) {
     hideNodeOverlay();
     return;
@@ -155,7 +174,7 @@ function _render(node) {
     .attr('r', BTN_R)
     .on('click', (event) => {
       event.stopPropagation();
-      const n = data.findNodeById(_overlayNodeId);
+      const n = _getOverlayNode(_overlayNodeId);
       if (_panelOpen) {
         _closePanel();
       } else {
@@ -181,7 +200,7 @@ function _renderPanel(node) {
   const itemH = 36;
   const items = [
     {
-      label: '� Enter node',
+      label: '📂 Enter node',
       onClick: (event) => {
         event.stopPropagation();
         const id = _overlayNodeId;
@@ -190,7 +209,7 @@ function _renderPanel(node) {
       },
     },
     {
-      label: '�🔗 Link node',
+      label: '🔗 Link node',
       onClick: (event) => {
         event.stopPropagation();
         const sourceNodeId = _overlayNodeId;
@@ -212,6 +231,12 @@ function _renderPanel(node) {
       onClick: (event) => {
         event.stopPropagation();
         const idToDelete = _overlayNodeId;
+
+        if (idToDelete === getCurrentFolderId()) {
+          alert('You cannot delete the parent node while inside its folder.');
+          return;
+        }
+
         hideNodeOverlay();
         nodeDelete(idToDelete);
         sendNodeDelete(_userId, _roomId, idToDelete);

@@ -7,7 +7,7 @@ import { hideNodeOverlay } from './frontend/room/svg/index.js';
 import { clearSelection, getSelectedLinks, getSelectedNodeIds, hasAnySelection } from './frontend/room/svg/selectionState.js';
 import { linkDelete, nodeDelete } from './frontend/room/nodeManipulations.js';
 import { sendLinkDelete, sendNodeDelete } from './frontend/room/webSocketSendEvents.js';
-import { renderBreadcrumb } from './frontend/room/folderState.js';
+import { getCurrentFolderId, renderBreadcrumb, renderParentContextCard } from './frontend/room/folderState.js';
 
 const roomId = getRoomIdFromPath();
 const userId = getUserId();
@@ -19,6 +19,7 @@ if (!roomId) {
 
 await initRoomWebSocketListeners();
 renderBreadcrumb();
+renderParentContextCard();
 
 function isEditableTarget(target) {
   return target instanceof HTMLElement
@@ -27,12 +28,19 @@ function isEditableTarget(target) {
 
 function deleteSelection() {
   const selectedNodeIds = getSelectedNodeIds();
+  const currentFolderId = getCurrentFolderId();
+
+  if (currentFolderId !== null && selectedNodeIds.includes(currentFolderId)) {
+    alert('You cannot delete the parent node while inside its folder.');
+  }
+
+  const deletableNodeIds = selectedNodeIds.filter(nodeId => nodeId !== currentFolderId);
   const selectedNodeIdSet = new Set(selectedNodeIds);
   const selectedLinks = getSelectedLinks().filter(link => {
     return !selectedNodeIdSet.has(link.source) && !selectedNodeIdSet.has(link.target);
   });
 
-  if (selectedNodeIds.length === 0 && selectedLinks.length === 0) {
+  if (deletableNodeIds.length === 0 && selectedLinks.length === 0) {
     return;
   }
 
@@ -44,7 +52,7 @@ function deleteSelection() {
     sendLinkDelete(userId, roomId, link.source, link.target);
   });
 
-  selectedNodeIds.forEach(nodeId => {
+  deletableNodeIds.forEach(nodeId => {
     nodeDelete(nodeId);
     sendNodeDelete(userId, roomId, nodeId);
   });

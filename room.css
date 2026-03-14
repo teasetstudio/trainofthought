@@ -48,6 +48,79 @@ body, html {
   font-weight: 600;
 }
 
+.parent-context-card {
+  position: fixed;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  width: min(560px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(79, 124, 255, 0.22);
+  background: linear-gradient(180deg, rgba(245, 248, 255, 0.96), rgba(235, 242, 255, 0.96));
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.parent-context-card__type {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(79, 124, 255, 0.12);
+  color: #365dc8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.parent-context-card__title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.parent-context-card__summary {
+  margin: 0;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.parent-context-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.parent-context-card__button {
+  appearance: none;
+  border: 1px solid rgba(79, 124, 255, 0.25);
+  background: #ffffff;
+  color: #2f54b8;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.parent-context-card__button:hover {
+  background: #f8fbff;
+}
+
+.parent-context-card__status {
+  color: #475569;
+  font-size: 12px;
+}
+
 .node {
   fill: transparent;
   stroke: #c8c8d8;
@@ -58,12 +131,23 @@ body, html {
   /* fill: #f9f9fb; - assigned in the updateSvgGraph.js based on node type */
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.10));
 }
+.node-back--pinned-parent {
+  fill: #eef3ff !important;
+  stroke: #4f7cff;
+  stroke-width: 1.4px;
+  stroke-dasharray: 8 4;
+  filter: drop-shadow(0 6px 14px rgba(79, 124, 255, 0.18));
+}
 .node-text {
   fill: #2c2c3a;
   font-size: 13px;
   font-family: inherit;
   pointer-events: none;
   dominant-baseline: middle;
+}
+.node-text--pinned-parent {
+  font-weight: 700;
+  fill: #1e3a8a;
 }
 .node-link {
   stroke-opacity: 0.6;
@@ -86,6 +170,10 @@ body, html {
   fill: #999;
 }
 .node.selected {
+  stroke: #4f7cff;
+  stroke-width: 2px;
+}
+.node--pinned-parent {
   stroke: #4f7cff;
   stroke-width: 2px;
 }

@@ -9,7 +9,7 @@ import { applyNodeTextWrap } from '../nodeLayout.js';
 import { hideNodeOverlay, syncNodeOverlay } from './nodeOverlay.js';
 import { isLinking, startLinking, updateLinkingLine, updateLinkingHover, finishLinking } from './linkingState.js';
 import { linkCreate } from '../nodeManipulations.js';
-import { getVisibleGraph } from '../folderState.js';
+import { getVisibleGraph, renderParentContextCard } from '../folderState.js';
 import {
   applySelectionStyles,
   getSelectedNodeIds,
@@ -118,6 +118,7 @@ export async function updateSvgGraph() {
       update => update,
       exit => exit.remove()
     )
+    .classed("node-back--pinned-parent", d => Boolean(d.isPinnedParent))
     .attr("x", d => d.x - d.w / 2)
     .attr("y", d => d.y - d.h / 2)
     .attr("width", d => d.w)
@@ -133,6 +134,7 @@ export async function updateSvgGraph() {
       update => update,
       exit => exit.remove()
     )
+    .classed("node-text--pinned-parent", d => Boolean(d.isPinnedParent))
     .attr("id", d => `id_node-text_${d.id}`)
     .attr("text-anchor", "middle")
     .call(applyNodeTextWrap);
@@ -144,6 +146,7 @@ export async function updateSvgGraph() {
       update => update,
       exit => exit.remove()
     )
+    .classed("node--pinned-parent", d => Boolean(d.isPinnedParent))
     .attr("x", d => d.x - d.w / 2)
     .attr("y", d => d.y - d.h / 2)
     .attr("width", d => d.w)
@@ -180,6 +183,20 @@ export async function updateSvgGraph() {
           }
         }
 
+        // parent context node is pinned: allow only linking/alt-create, not move dragging
+        if (d.isPinnedParent && !pendingNode.isActive) {
+          d.dragNodeIds = null;
+          d.dragInitialPositions = null;
+          d.dragOriginX = null;
+          d.dragOriginY = null;
+
+          if (!isNodeSelected(d.id) && !isSelectionToggleEvent(event.sourceEvent)) {
+            selectOnlyNode(d.id);
+          }
+          syncNodeOverlay();
+          return;
+        }
+
         if (pendingNode.isActive) {
           hideNodeOverlay();
           d3.select(`#id_node-back_${pendingNode.nodeData.id}`).raise();
@@ -193,7 +210,8 @@ export async function updateSvgGraph() {
 
           hideNodeOverlay();
 
-          d.dragNodeIds = isNodeSelected(d.id) ? getSelectedNodeIds() : [d.id];
+          d.dragNodeIds = (isNodeSelected(d.id) ? getSelectedNodeIds() : [d.id])
+            .filter(nodeId => !nodesById.get(nodeId)?.isPinnedParent);
           d.dragInitialPositions = new Map(
             d.dragNodeIds.map(nodeId => {
               const node = data.findNodeById(nodeId);
@@ -214,6 +232,14 @@ export async function updateSvgGraph() {
           return;
         }
 
+        if (d.isPinnedParent && !pendingNode.isActive) {
+          return;
+        }
+
+        if (!pendingNode.isActive && (typeof d.dragOriginX !== "number" || typeof d.dragOriginY !== "number")) {
+          return;
+        }
+
         const dx = event.x - d.dragOriginX;
         const dy = event.y - d.dragOriginY;
         const { x, y } = applyShiftConstraint(event.sourceEvent.shiftKey, dx, dy, d.dragOriginX, d.dragOriginY, event.x, event.y);
@@ -222,7 +248,7 @@ export async function updateSvgGraph() {
           movePendingNode(x, y, userId, roomId);
 
           if (pendingNode.svgLink && pendingNode.linkData) {
-            const parentNode = data.findNodeById(pendingNode.linkData.source)
+            const parentNode = nodesById.get(pendingNode.linkData.source) || data.findNodeById(pendingNode.linkData.source)
             const nodeEdgePos = calculateEdgePosition(parentNode, pendingNode.nodeData)
             pendingNode.svgLink
               .attr("x1", parentNode.x)
@@ -245,6 +271,7 @@ export async function updateSvgGraph() {
             const initialPosition = dragInitialPositions.get(nodeId);
             const node = data.findNodeById(nodeId);
             if (!initialPosition || !node) return;
+            if (node.isPinnedParent) return;
 
             const nextX = initialPosition.x + dragDx;
             const nextY = initialPosition.y + dragDy;
@@ -259,7 +286,7 @@ export async function updateSvgGraph() {
             sendNodeMove(userId, roomId, nodeId, nextX, nextY);
           });
 
-          updateAllLinkPositions(data.getNodes());
+          updateAllLinkPositions(nodes);
         }
       })
       .on("end", function(event, d) {
@@ -272,6 +299,11 @@ export async function updateSvgGraph() {
             sendLinkCreate(userId, roomId, sourceId, targetId);
           }
 
+          return;
+        }
+
+        if (d.isPinnedParent && !pendingNode.isActive) {
+          syncNodeOverlay();
           return;
         }
 
@@ -295,4 +327,5 @@ export async function updateSvgGraph() {
 
   applySelectionStyles();
   syncNodeOverlay();
+  renderParentContextCard();
 }
