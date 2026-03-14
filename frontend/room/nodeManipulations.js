@@ -39,3 +39,8 @@ export function linkDelete(sourceId, targetId) {
   data.removeLink(sourceId, targetId);
   updateSvgGraph();
 }
+
+export function updateNodeType(nodeId, nodeType) {
+  data.updateNodeType(nodeId, nodeType);
+  updateSvgGraph();
+}

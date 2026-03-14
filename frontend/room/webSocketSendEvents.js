@@ -53,3 +53,9 @@ export async function sendLinkDelete(userId, roomId, source, target) {
   if (!socket || socket.readyState !== WebSocket.OPEN) return;
   socket.send(JSON.stringify({ type: 'LINK_DELETE', source, target, userId, roomId }));
 }
+
+export async function sendNodeType(userId, roomId, nodeId, nodeType) {
+  const socket = await getWebSocketClient();
+  if (!socket || socket.readyState !== WebSocket.OPEN) return;
+  socket.send(JSON.stringify({ type: 'NODE_TYPE', nodeId, nodeType, userId, roomId }));
+}

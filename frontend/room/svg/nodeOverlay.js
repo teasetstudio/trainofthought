@@ -193,7 +193,7 @@ function _renderPanel(node) {
         event.stopPropagation();
         const n = data.findNodeById(_overlayNodeId);
         hideNodeOverlay();
-        updateContentModal(n.id, n.content);
+        updateContentModal(n.id, n.content, n.nodeType);
       },
     },
     {

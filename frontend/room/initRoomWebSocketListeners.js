@@ -1,7 +1,7 @@
 import { data } from './data/data.js';
 import { getUserId, getRoomIdFromPath, getWebSocketClient } from '../utils/index.js';
 import { updateSvgGraph } from './svg/index.js';
-import { nodeMove, nodeCreate, updateNodeContent, nodeDelete, linkCreate, linkDelete } from './nodeManipulations.js';
+import { nodeMove, nodeCreate, updateNodeContent, nodeDelete, linkCreate, linkDelete, updateNodeType } from './nodeManipulations.js';
 
 const userId = getUserId();
 const roomId = getRoomIdFromPath();
@@ -36,6 +36,8 @@ export async function initRoomWebSocketListeners() {
         linkCreate(msg.source, msg.target);
       } else if (msg.type === 'LINK_DELETE') {
         linkDelete(msg.source, msg.target);
+      } else if (msg.type === 'NODE_TYPE') {
+        updateNodeType(msg.nodeId, msg.nodeType);
       }
     } catch {}
   });

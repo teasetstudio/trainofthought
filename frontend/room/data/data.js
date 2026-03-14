@@ -59,6 +59,12 @@ class Data {
     node.content = newContent;
   }
 
+  updateNodeType = (nodeId, nodeType) => {
+    const node = this.findNodeById(nodeId);
+    if (!node) return;
+    node.nodeType = nodeType;
+  }
+
   linkExists = (sourceId, targetId) => {
     return this.links.some(l => l.source === sourceId && l.target === targetId);
   }

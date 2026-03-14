@@ -25,6 +25,19 @@ import {
 const userId = getUserId();
 const roomId = getRoomIdFromPath();
 
+const NODE_TYPE_COLORS = {
+  // Plot item nodes
+  PlotChapter:  '#d2d6f2',
+  PlotBeat:     '#c4d6e9',
+  TurningPoint: '#d7c5e9',
+  // Reference nodes
+  Character:    '#d4c699',
+  Scene:        '#99d1bb',
+  Location:     '#9dd2ca',
+  Theme:        '#a196ce',
+  Arc:          '#d684a3',
+};
+
 function raiseNodes(nodeIds) {
   nodeIds.forEach(nodeId => {
     d3.select(`#id_node-back_${nodeId}`).raise();
@@ -111,6 +124,7 @@ export async function updateSvgGraph() {
     .attr("height", d => d.h)
     .attr("rx", 10)
     .attr("id", d => `id_node-back_${d.id}`)
+    .attr("fill", d => NODE_TYPE_COLORS[d.nodeType] || '#E5E7EB')
 
   svgContainer.selectAll(".node-text")
     .data(nodes, d => d.id)

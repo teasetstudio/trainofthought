@@ -72,6 +72,11 @@ export class Room {
     return this.graph.applyNodeContent(msg);
   }
 
+  updateNodeType(peerId, msg) {
+    if (!this.canEdit(peerId)) return false;
+    return this.graph.applyNodeType(msg);
+  }
+
   deleteNode(peerId, msg) {
     if (!this.canEdit(peerId)) return false;
     return this.graph.applyNodeDelete(msg);

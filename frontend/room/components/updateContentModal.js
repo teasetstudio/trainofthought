@@ -1,13 +1,27 @@
-import { updateNodeContent } from '../nodeManipulations.js';
+import { updateNodeContent, updateNodeType } from '../nodeManipulations.js';
 import { getUserId, getRoomIdFromPath } from '../../utils/index.js';
-import { sendNodeContent } from '../webSocketSendEvents.js';
+import { sendNodeContent, sendNodeType } from '../webSocketSendEvents.js';
 import { openModal } from '../../shared/modal.js';
 
 const userId = getUserId();
 const roomId = getRoomIdFromPath();
 
-export function updateContentModal(nodeId, currentValue) {
+const NODE_TYPES = [
+  // Plot item nodes
+  { value: 'PlotChapter', label: '📖 PlotChapter' },
+  { value: 'PlotBeat', label: '▶ PlotBeat' },
+  { value: 'TurningPoint', label: '🔴 TurningPoint' },
+  // Reference nodes
+  { value: 'Character', label: '👤 Character' },
+  { value: 'Scene', label: '🎬 Scene' },
+  { value: 'Location', label: '📍 Location' },
+  { value: 'Theme', label: '💡 Theme' },
+  { value: 'Arc', label: '↗️ Arc' },
+];
+
+export function updateContentModal(nodeId, currentValue, currentNodeType) {
   let textarea;
+  let typeSelect;
 
   const modal = openModal({
     title: 'Edit Node Content',
@@ -26,7 +40,30 @@ export function updateContentModal(nodeId, currentValue) {
   textarea.placeholder = 'Write your node content here';
   textarea.value = currentValue || '';
 
-  modal.body.append(label, textarea);
+  const typeLabel = document.createElement('label');
+  typeLabel.className = 'shared-visually-hidden';
+  typeLabel.setAttribute('for', `node-type-${nodeId}`);
+  typeLabel.textContent = 'Node type';
+
+  typeSelect = document.createElement('select');
+  typeSelect.id = `node-type-${nodeId}`;
+  typeSelect.className = 'shared-modal__select';
+
+  const noneOption = document.createElement('option');
+  noneOption.value = '';
+  noneOption.textContent = '— None —';
+  typeSelect.appendChild(noneOption);
+
+  NODE_TYPES.forEach(({ value, label: optionLabel }) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = optionLabel;
+    typeSelect.appendChild(option);
+  });
+
+  typeSelect.value = currentNodeType || 'PlotChapter';
+
+  modal.body.append(typeLabel, typeSelect, label, textarea);
 
   modal.addAction({
     label: 'Cancel',
@@ -41,8 +78,16 @@ export function updateContentModal(nodeId, currentValue) {
     variant: 'primary',
     onClick: () => {
       const nodeText = textarea.value;
+      const selectedType = typeSelect.value || null;
+
       updateNodeContent(nodeId, nodeText);
       sendNodeContent(userId, roomId, nodeId, nodeText);
+
+      if (selectedType !== (currentNodeType || null)) {
+        updateNodeType(nodeId, selectedType);
+        sendNodeType(userId, roomId, nodeId, selectedType);
+      }
+
       modal.close('save');
     },
   });

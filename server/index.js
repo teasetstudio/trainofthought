@@ -101,6 +101,15 @@ wss.on('connection', (ws) => {
           broadcast(ws, msg);
           return;
         }
+        case 'NODE_TYPE': {
+          if (typeof msg.nodeId !== 'number') return;
+          if (msg.nodeType !== null && typeof msg.nodeType !== 'string') return;
+          const room = rooms.getRoom(msg.roomId);
+          if (!room) return;
+          if (!room.updateNodeType(msg.userId, msg)) return;
+          broadcast(ws, msg);
+          return;
+        }
         case 'NODE_DELETE': {
           if (typeof msg.nodeId !== 'number') return;
           const room = rooms.getRoom(msg.roomId);
