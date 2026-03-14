@@ -34,7 +34,7 @@ const NODE_TYPE_COLORS = {
   Character:    '#d4c699',
   Scene:        '#99d1bb',
   Location:     '#9dd2ca',
-  Theme:        '#a196ce',
+  Theme:        '#96cea0',
   Arc:          '#d684a3',
 };
 

@@ -128,7 +128,9 @@ body.shared-components-scroll-lock {
 }
 
 .shared-modal__button:focus-visible,
-.shared-modal__textarea:focus-visible {
+.shared-modal__textarea:focus-visible,
+.shared-select__control:focus-visible,
+.shared-modal__select:focus-visible {
   outline: 3px solid rgba(37, 99, 235, 0.22);
   outline-offset: 2px;
 }
@@ -168,6 +170,60 @@ body.shared-components-scroll-lock {
 
 .shared-modal__textarea::placeholder {
   color: #64748b;
+}
+
+.shared-select {
+  position: relative;
+  width: 100%;
+}
+
+.shared-select__control,
+.shared-modal__select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 44px 0 16px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  border-radius: var(--shared-radius-control);
+  background-color: rgba(248, 250, 252, 0.96);
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  color: var(--shared-color-text);
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.35;
+  box-sizing: border-box;
+  appearance: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.shared-select__control:hover,
+.shared-modal__select:hover {
+  border-color: rgba(100, 116, 139, 0.6);
+  background-color: #ffffff;
+}
+
+.shared-select__control:focus,
+.shared-modal__select:focus {
+  border-color: var(--shared-color-focus);
+}
+
+.shared-select__control optgroup,
+.shared-modal__select optgroup {
+  color: #64748b;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.shared-select__control option,
+.shared-modal__select option {
+  color: var(--shared-color-text);
+  font-weight: 500;
 }
 
 @media (max-width: 640px) {

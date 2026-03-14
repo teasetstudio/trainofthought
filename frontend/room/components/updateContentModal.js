@@ -2,21 +2,30 @@ import { updateNodeContent, updateNodeType } from '../nodeManipulations.js';
 import { getUserId, getRoomIdFromPath } from '../../utils/index.js';
 import { sendNodeContent, sendNodeType } from '../webSocketSendEvents.js';
 import { openModal } from '../../shared/modal.js';
+import { createSelectInput } from '../../shared/selectInput.js';
 
 const userId = getUserId();
 const roomId = getRoomIdFromPath();
 
-const NODE_TYPES = [
-  // Plot item nodes
-  { value: 'PlotChapter', label: '📖 PlotChapter' },
-  { value: 'PlotBeat', label: '▶ PlotBeat' },
-  { value: 'TurningPoint', label: '🔴 TurningPoint' },
-  // Reference nodes
-  { value: 'Character', label: '👤 Character' },
-  { value: 'Scene', label: '🎬 Scene' },
-  { value: 'Location', label: '📍 Location' },
-  { value: 'Theme', label: '💡 Theme' },
-  { value: 'Arc', label: '↗️ Arc' },
+const NODE_TYPE_GROUPS = [
+  {
+    label: 'Plot Items',
+    options: [
+      { value: 'PlotChapter', label: 'Chapter 📖' },
+      { value: 'PlotBeat', label: 'Plot Beat ・' },
+      { value: 'TurningPoint', label: 'Turning Point ➤' },
+    ],
+  },
+  {
+    label: 'Reference Nodes',
+    options: [
+      { value: 'Character', label: 'Character 👤' },
+      { value: 'Scene', label: 'Scene 🎬' },
+      { value: 'Location', label: 'Location 📍' },
+      { value: 'Theme', label: 'Theme 💡' },
+      { value: 'Arc', label: 'Arc ↗️' },
+    ],
+  },
 ];
 
 export function updateContentModal(nodeId, currentValue, currentNodeType) {
@@ -40,30 +49,17 @@ export function updateContentModal(nodeId, currentValue, currentNodeType) {
   textarea.placeholder = 'Write your node content here';
   textarea.value = currentValue || '';
 
-  const typeLabel = document.createElement('label');
-  typeLabel.className = 'shared-visually-hidden';
-  typeLabel.setAttribute('for', `node-type-${nodeId}`);
-  typeLabel.textContent = 'Node type';
-
-  typeSelect = document.createElement('select');
-  typeSelect.id = `node-type-${nodeId}`;
-  typeSelect.className = 'shared-modal__select';
-
-  const noneOption = document.createElement('option');
-  noneOption.value = '';
-  noneOption.textContent = '— None —';
-  typeSelect.appendChild(noneOption);
-
-  NODE_TYPES.forEach(({ value, label: optionLabel }) => {
-    const option = document.createElement('option');
-    option.value = value;
-    option.textContent = optionLabel;
-    typeSelect.appendChild(option);
+  const typeField = createSelectInput({
+    id: `node-type-${nodeId}`,
+    label: 'Node type',
+    value: currentNodeType || 'PlotChapter',
+    placeholder: '— None —',
+    groups: NODE_TYPE_GROUPS,
   });
 
-  typeSelect.value = currentNodeType || 'PlotChapter';
+  typeSelect = typeField.select;
 
-  modal.body.append(typeLabel, typeSelect, label, textarea);
+  modal.body.append(typeField.wrapper, label, textarea);
 
   modal.addAction({
     label: 'Cancel',
