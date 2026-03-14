@@ -3,6 +3,7 @@ import { calculateEdgePosition } from '../data/dataUtils.js';
 import { svgContainer } from './svg.js';
 import { applyNodeTextWrap, computeNodeWidth, computeNodeHeight } from '../nodeLayout.js';
 import { moveNodeOverlay } from './nodeOverlay.js';
+import { getVisibleGraph } from '../folderState.js';
 
 export const moveSvgNode = (nodeId, newX, newY) => {
   const node = data.findNodeById(nodeId);
@@ -19,27 +20,29 @@ export const moveSvgNode = (nodeId, newX, newY) => {
 };
 
 const updateAllSvgLinks = () => {
-  const nodes = data.getNodes();
-  const links = data.getLinks();
+  const { visibleNodes: nodes, visibleLinks: links } = getVisibleGraph();
+  const nodesById = new Map(nodes.map(node => [node.id, node]));
 
   svgContainer.selectAll('.node-link')
-    .data(links)
+    .data(links, d => `${d.source}_${d.target}`)
     .attr('x1', d => {
-      const source = nodes.find(node => node.id === d.source);
-      return source.x;
+      const source = nodesById.get(d.source);
+      return source ? source.x : null;
     })
     .attr('y1', d => {
-      const source = nodes.find(node => node.id === d.source);
-      return source.y;
+      const source = nodesById.get(d.source);
+      return source ? source.y : null;
     })
     .attr('x2', d => {
-      const source = nodes.find(node => node.id === d.source);
-      const target = nodes.find(node => node.id === d.target);
+      const source = nodesById.get(d.source);
+      const target = nodesById.get(d.target);
+      if (!source || !target) return null;
       return calculateEdgePosition(source, target).x;
     })
     .attr('y2', d => {
-      const source = nodes.find(node => node.id === d.source);
-      const target = nodes.find(node => node.id === d.target);
+      const source = nodesById.get(d.source);
+      const target = nodesById.get(d.target);
+      if (!source || !target) return null;
       return calculateEdgePosition(source, target).y;
     });
 }
