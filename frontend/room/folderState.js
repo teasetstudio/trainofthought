@@ -1,5 +1,6 @@
 import { data } from './data/data.js';
 import { updateSvgGraph } from './svg/index.js';
+import { clearSelection } from './svg/selectionState.js';
 
 const REFERENCE_TYPES = new Set(['Character', 'Scene', 'Location', 'Theme', 'Arc']);
 
@@ -11,6 +12,7 @@ export function getCurrentFolderId() {
 
 export function enterFolder(nodeId) {
   _currentFolderId = nodeId;
+  clearSelection();
   updateSvgGraph();
   renderBreadcrumb();
   renderParentContextCard();
@@ -20,6 +22,7 @@ export function exitFolder() {
   if (_currentFolderId === null) return;
   const currentFolder = data.findNodeById(_currentFolderId);
   _currentFolderId = currentFolder?.parentId ?? null;
+  clearSelection();
   updateSvgGraph();
   renderBreadcrumb();
   renderParentContextCard();
@@ -27,6 +30,7 @@ export function exitFolder() {
 
 export function goToRoot() {
   _currentFolderId = null;
+  clearSelection();
   updateSvgGraph();
   renderBreadcrumb();
   renderParentContextCard();
