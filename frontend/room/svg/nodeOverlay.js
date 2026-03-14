@@ -6,6 +6,7 @@ import { getUserId, getRoomIdFromPath } from '../../utils/index.js';
 import { sendNodeDelete, sendLinkCreate } from '../webSocketSendEvents.js';
 import { isLinking, startLinking, updateLinkingLine, updateLinkingHover, finishLinking } from './linkingState.js';
 import { getSingleSelectedNodeId } from './selectionState.js';
+import { enterFolder } from '../folderState.js';
 
 const _userId = getUserId();
 const _roomId = getRoomIdFromPath();
@@ -180,7 +181,16 @@ function _renderPanel(node) {
   const itemH = 36;
   const items = [
     {
-      label: '🔗 Link node',
+      label: '� Enter node',
+      onClick: (event) => {
+        event.stopPropagation();
+        const id = _overlayNodeId;
+        hideNodeOverlay();
+        enterFolder(id);
+      },
+    },
+    {
+      label: '�🔗 Link node',
       onClick: (event) => {
         event.stopPropagation();
         const sourceNodeId = _overlayNodeId;

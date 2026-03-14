@@ -7,6 +7,7 @@ import { hideNodeOverlay } from './frontend/room/svg/index.js';
 import { clearSelection, getSelectedLinks, getSelectedNodeIds, hasAnySelection } from './frontend/room/svg/selectionState.js';
 import { linkDelete, nodeDelete } from './frontend/room/nodeManipulations.js';
 import { sendLinkDelete, sendNodeDelete } from './frontend/room/webSocketSendEvents.js';
+import { renderBreadcrumb } from './frontend/room/folderState.js';
 
 const roomId = getRoomIdFromPath();
 const userId = getUserId();
@@ -17,6 +18,7 @@ if (!roomId) {
 }
 
 await initRoomWebSocketListeners();
+renderBreadcrumb();
 
 function isEditableTarget(target) {
   return target instanceof HTMLElement

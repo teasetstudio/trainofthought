@@ -3,6 +3,7 @@ import { svgContainer } from './svg/svg.js';
 import { updateSvgGraph } from './svg/index.js';
 import { updateContentModal } from './components/updateContentModal.js';
 import { computeNodeWidth, computeNodeHeight } from './nodeLayout.js';
+import { getCurrentFolderId } from './folderState.js';
 
 function getNextNodeId() {
   return data.getNodes().reduce((maxNodeId, node) => {
@@ -62,6 +63,7 @@ class PendingNode {
       w,
       h: computeNodeHeight(content, w),
       content,
+      parentId: getCurrentFolderId(),
     };
 
     data.addNode(node);

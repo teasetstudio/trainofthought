@@ -1,8 +1,8 @@
 export const defaultGraphState = {
   nodes: [
-    { id: 1, x: 100, y: 100, w: 160, h: 46, content: 'Node 1', nodeType: null },
-    { id: 2, x: 200, y: 200, w: 160, h: 46, content: 'Node 2', nodeType: null },
-    { id: 3, x: 300, y: 300, w: 160, h: 46, content: 'Node 33', nodeType: null },
+    { id: 1, x: 100, y: 100, w: 160, h: 46, content: 'Node 1', nodeType: null, parentId: null },
+    { id: 2, x: 200, y: 200, w: 160, h: 46, content: 'Node 2', nodeType: null, parentId: null },
+    { id: 3, x: 300, y: 300, w: 160, h: 46, content: 'Node 33', nodeType: null, parentId: null },
   ],
   links: [
     { source: 1, target: 2 },
@@ -45,7 +45,7 @@ export class GraphData {
     if (!node || typeof node.id !== 'number') return false;
 
     if (!this.nodes.has(node.id)) {
-      this.nodes.set(node.id, { ...node, nodeType: node.nodeType ?? null });
+      this.nodes.set(node.id, { ...node, nodeType: node.nodeType ?? null, parentId: node.parentId ?? null });
     }
 
     if (

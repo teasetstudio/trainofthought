@@ -9,6 +9,7 @@ import { applyNodeTextWrap } from '../nodeLayout.js';
 import { hideNodeOverlay, syncNodeOverlay } from './nodeOverlay.js';
 import { isLinking, startLinking, updateLinkingLine, updateLinkingHover, finishLinking } from './linkingState.js';
 import { linkCreate } from '../nodeManipulations.js';
+import { getVisibleGraph } from '../folderState.js';
 import {
   applySelectionStyles,
   getSelectedNodeIds,
@@ -66,8 +67,7 @@ function updateAllLinkPositions(nodes) {
 
 // updating entire graph
 export async function updateSvgGraph() {
-  const nodes = data.getNodes();
-  const links = data.getLinks();
+  const { visibleNodes: nodes, visibleLinks: links } = getVisibleGraph();
   const nodesById = new Map(nodes.map(node => [node.id, node]));
 
   pruneSelection();
