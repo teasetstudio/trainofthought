@@ -139,6 +139,7 @@ export function openModal(options = {}) {
 
   let initialFocusTarget = initialFocus;
   let isClosed = false;
+  let overlayMouseDownOutside = false;
 
   const focusFirstElement = () => {
     const resolvedInitialFocus = typeof initialFocusTarget === 'function'
@@ -198,12 +199,24 @@ export function openModal(options = {}) {
     }
   };
 
-  const handleOverlayClick = (event) => {
-    if (closeOnOverlay && event.target === overlay) {
-      api.close('overlay');
-    }
+  const handleOverlayMouseDown = (event) => {
+    overlayMouseDownOutside = event.target === overlay;
   };
 
+  const handleOverlayMouseUp = (event) => {
+    overlayMouseDownOutside = overlayMouseDownOutside && event.target === overlay;
+  };
+
+  const handleOverlayClick = (event) => {
+    if (closeOnOverlay && overlayMouseDownOutside && event.target === overlay) {
+      api.close('overlay');
+    }
+
+    overlayMouseDownOutside = false;
+  };
+
+  overlay.addEventListener('mousedown', handleOverlayMouseDown);
+  overlay.addEventListener('mouseup', handleOverlayMouseUp);
   overlay.addEventListener('click', handleOverlayClick);
   overlay.addEventListener('keydown', handleKeyDown);
   document.addEventListener('focusin', handleFocusIn, true);
@@ -256,6 +269,8 @@ export function openModal(options = {}) {
       }
 
       isClosed = true;
+      overlay.removeEventListener('mousedown', handleOverlayMouseDown);
+      overlay.removeEventListener('mouseup', handleOverlayMouseUp);
       overlay.removeEventListener('click', handleOverlayClick);
       overlay.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('focusin', handleFocusIn, true);

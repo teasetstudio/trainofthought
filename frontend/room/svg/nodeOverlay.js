@@ -18,9 +18,6 @@ let _overlayNodeId = null;
 
 const BTN_R = 11;
 
-const PINNED_PARENT_MIN_X = 160;
-const PINNED_PARENT_Y = 128;
-
 function _stopOverlayLinkMode() {
   if (_linkModeCleanup) {
     _linkModeCleanup();
@@ -98,8 +95,6 @@ function _getOverlayNode(nodeId) {
   if (nodeId === getCurrentFolderId()) {
     return {
       ...node,
-      x: Math.max(PINNED_PARENT_MIN_X, Math.round(window.innerWidth / 2)),
-      y: PINNED_PARENT_Y,
       isPinnedParent: true,
     };
   }

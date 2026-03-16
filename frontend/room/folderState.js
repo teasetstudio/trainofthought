@@ -1,10 +1,35 @@
 import { data } from './data/data.js';
 import { updateSvgGraph } from './svg/index.js';
+import { svg } from './svg/svg.js';
+import { svgZoom } from './svg/dragZoomHelpers.js';
 import { clearSelection } from './svg/selectionState.js';
 
 const REFERENCE_TYPES = new Set(['Character', 'Scene', 'Location', 'Theme', 'Arc']);
 
 let _currentFolderId = null;
+
+function focusOnNode(nodeId) {
+  if (nodeId === null || nodeId === undefined) return;
+  const targetNode = data.findNodeById(nodeId);
+  if (!targetNode) return;
+
+  const svgNode = svg.node();
+  if (!svgNode) return;
+
+  const currentTransform = d3.zoomTransform(svgNode);
+  const zoomScale = currentTransform.k;
+
+  const width = Number(svg.attr('width')) || window.innerWidth;
+  const height = Number(svg.attr('height')) || window.innerHeight;
+  const targetX = targetNode.x;
+  const targetY = targetNode.y;
+
+  const nextTransform = d3.zoomIdentity
+    .translate((width / 2) - targetX * zoomScale, (height / 2) - targetY * zoomScale)
+    .scale(zoomScale);
+
+  svg.call(svgZoom.transform, nextTransform);
+}
 
 export function getCurrentFolderId() {
   return _currentFolderId;
@@ -14,26 +39,31 @@ export function enterFolder(nodeId) {
   _currentFolderId = nodeId;
   clearSelection();
   updateSvgGraph();
+  focusOnNode(nodeId);
   renderBreadcrumb();
   renderParentContextCard();
 }
 
 export function exitFolder() {
   if (_currentFolderId === null) return;
+  const exitingFolderId = _currentFolderId;
   const currentFolder = data.findNodeById(_currentFolderId);
   _currentFolderId = currentFolder?.parentId ?? null;
   clearSelection();
   updateSvgGraph();
   renderBreadcrumb();
   renderParentContextCard();
+  focusOnNode(exitingFolderId);
 }
 
 export function goToRoot() {
+  const exitingFolderId = _currentFolderId;
   _currentFolderId = null;
   clearSelection();
   updateSvgGraph();
   renderBreadcrumb();
   renderParentContextCard();
+  focusOnNode(exitingFolderId);
 }
 
 export function getCurrentParentNode() {
@@ -79,8 +109,8 @@ export function getVisibleGraph() {
   if (currentParent) {
     const pinnedParentNode = {
       ...currentParent,
-      x: Math.max(160, Math.round(window.innerWidth / 2)),
-      y: 128,
+      x: currentParent.x,
+      y: currentParent.y,
       isPinnedParent: true,
     };
 
