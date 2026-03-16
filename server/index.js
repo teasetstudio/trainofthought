@@ -1,11 +1,12 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 import { WebSocketServer } from 'ws';
 import { rooms } from './services/RoomsState/index.js';
 import { createHttpServer } from './services/createHttpServer.js';
+import { authenticateWsRequest } from './services/auth/wsAuth.js';
  
 const PORT = Number(process.env.PORT || 3000);
 const WS_PATH = '/ws';
+const WS_UNAUTHORIZED_CLOSE_CODE = 4001;
 
 const server = createHttpServer();
 
@@ -27,7 +28,16 @@ function broadcastAll(obj) {
   }
 }
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
+  const auth = authenticateWsRequest(req);
+
+  if (!auth?.id) {
+    ws.close(WS_UNAUTHORIZED_CLOSE_CODE, 'Unauthorized');
+    return;
+  }
+
+  ws.auth = auth;
+
   // rooms snapshot
   ws.send(JSON.stringify({
     type: 'ROOMS_SNAPSHOT',
@@ -40,13 +50,16 @@ wss.on('connection', (ws) => {
       if (!msg || typeof msg !== 'object') return;
       if (typeof msg.type !== 'string') return;
 
+      const actorId = ws.auth?.id;
+      if (!actorId) return;
+
       switch (msg.type) {
         /* ---------- ROOMS (STUBS) ---------- */
 
         case 'ROOM_CREATE': {
           rooms.createRoom({
             name: msg.name,
-            ownerId: msg.userId,
+            ownerId: actorId,
             isPublic: true,
           });
 
@@ -60,11 +73,15 @@ wss.on('connection', (ws) => {
         case 'ROOM_JOIN': {
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.canJoin(msg.userId)) return;
+          if (!room.canJoin(actorId)) return;
 
           room.addPeer({
-            id: msg.userId,
-            name: 'Peer',
+            id: actorId,
+            role: actorId === room.ownerId ? 'owner' : 'editor',
+            metadata: {
+              email: ws.auth.email,
+              displayName: ws.auth.displayName,
+            },
           });
 
           ws.send(JSON.stringify({
@@ -81,24 +98,24 @@ wss.on('connection', (ws) => {
           if (typeof msg.x !== 'number' || typeof msg.y !== 'number') return;
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.moveNode(msg.userId, msg)) return;
-          broadcast(ws, msg);
+          if (!room.moveNode(actorId, msg)) return;
+          broadcast(ws, { ...msg, userId: actorId });
           return;
         }
         case 'NODE_CREATE': {
           if (!msg.node || typeof msg.node !== 'object') return;
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.createNode(msg.userId, msg)) return;
-          broadcast(ws, msg);
+          if (!room.createNode(actorId, msg)) return;
+          broadcast(ws, { ...msg, userId: actorId });
           return;
         }
         case 'NODE_CONTENT': {
           if (typeof msg.content !== 'string') return;
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.updateNodeContent(msg.userId, msg)) return;
-          broadcast(ws, msg);
+          if (!room.updateNodeContent(actorId, msg)) return;
+          broadcast(ws, { ...msg, userId: actorId });
           return;
         }
         case 'NODE_TYPE': {
@@ -106,32 +123,32 @@ wss.on('connection', (ws) => {
           if (msg.nodeType !== null && typeof msg.nodeType !== 'string') return;
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.updateNodeType(msg.userId, msg)) return;
-          broadcast(ws, msg);
+          if (!room.updateNodeType(actorId, msg)) return;
+          broadcast(ws, { ...msg, userId: actorId });
           return;
         }
         case 'NODE_DELETE': {
           if (typeof msg.nodeId !== 'number') return;
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.deleteNode(msg.userId, msg)) return;
-          broadcast(ws, msg);
+          if (!room.deleteNode(actorId, msg)) return;
+          broadcast(ws, { ...msg, userId: actorId });
           return;
         }
         case 'LINK_CREATE': {
           if (typeof msg.source !== 'number' || typeof msg.target !== 'number') return;
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.createLink(msg.userId, msg)) return;
-          broadcast(ws, msg);
+          if (!room.createLink(actorId, msg)) return;
+          broadcast(ws, { ...msg, userId: actorId });
           return;
         }
         case 'LINK_DELETE': {
           if (typeof msg.source !== 'number' || typeof msg.target !== 'number') return;
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.deleteLink(msg.userId, msg)) return;
-          broadcast(ws, msg);
+          if (!room.deleteLink(actorId, msg)) return;
+          broadcast(ws, { ...msg, userId: actorId });
           return;
         }
         default:

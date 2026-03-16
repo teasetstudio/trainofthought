@@ -1,6 +1,4 @@
-import { getWebSocketClient, getUserId } from '../utils/index.js';
-
-const userId = getUserId();
+import { getWebSocketClient } from '../utils/index.js';
 const modal = document.getElementById('create-modal');
 const input = document.getElementById('studio-name-input');
 
@@ -25,7 +23,7 @@ export async function confirmCreateRoom() {
     return;
   }
   const socket = await getWebSocketClient();
-  socket.send(JSON.stringify({ type: 'ROOM_CREATE', name, userId }));
+  socket.send(JSON.stringify({ type: 'ROOM_CREATE', name }));
   closeCreateModal();
 }
 

@@ -1,11 +1,11 @@
 import { getWebSocketClient } from '../utils/index.js';
 
 // triggers 'ROOM_JOINED' response with graph data
-export function sendRoomJoinEvent(userId, roomId) {
+export function sendRoomJoinEvent(roomId) {
   setTimeout(async () => {
     const ws = await getWebSocketClient();
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
-    ws.send(JSON.stringify({ type: 'ROOM_JOIN', userId, roomId }));
+    ws.send(JSON.stringify({ type: 'ROOM_JOIN', roomId }));
   }, 500);
 }
 

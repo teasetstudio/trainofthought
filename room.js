@@ -1,13 +1,17 @@
 import { sendRoomJoinEvent } from './frontend/room/webSocketSendEvents.js';
 import { svgDrag, svgZoom } from './frontend/room/svg/dragZoomHelpers.js'; 
 import { svg, setSvgSize } from './frontend/room/svg/svg.js';
-import { getUserId, getRoomIdFromPath } from './frontend/utils/index.js';
+import { getUserId, getRoomIdFromPath, requireAuth } from './frontend/utils/index.js';
 import { initRoomWebSocketListeners } from './frontend/room/initRoomWebSocketListeners.js';
 import { hideNodeOverlay } from './frontend/room/svg/index.js';
 import { clearSelection, getSelectedLinks, getSelectedNodeIds, hasAnySelection } from './frontend/room/svg/selectionState.js';
 import { linkDelete, nodeDelete } from './frontend/room/nodeManipulations.js';
 import { sendLinkDelete, sendNodeDelete } from './frontend/room/webSocketSendEvents.js';
 import { getCurrentFolderId, renderBreadcrumb, renderParentContextCard } from './frontend/room/folderState.js';
+
+if (!requireAuth('/login')) {
+  throw new Error('Authentication required');
+}
 
 const roomId = getRoomIdFromPath();
 const userId = getUserId();
@@ -81,4 +85,4 @@ window.addEventListener('resize', () => {
   setSvgSize()
 });
 
-sendRoomJoinEvent(userId, roomId);
+sendRoomJoinEvent(roomId);

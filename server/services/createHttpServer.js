@@ -1,51 +1,50 @@
 import http from 'http';
-import fs from 'fs/promises';
+import express from 'express';
 import path from 'path';
-import { MIME_TYPES, projectRoot, WS_PATH } from '../const/index.js';
+import { projectRoot, WS_PATH } from '../const/index.js';
+import { createAuthRouter } from './auth/routes.js';
 
-function safeJoin(base, target) {
-  const targetPath = path.posix.normalize('/' + target).replace(/^\/+/, '');
-  const resolved = path.resolve(base, targetPath);
-  if (!resolved.startsWith(base + path.sep) && resolved !== base) {
-    throw new Error('Invalid path');
-  }
-  return resolved;
+function sendPage(res, fileName) {
+  res.sendFile(path.join(projectRoot, fileName));
 }
 
 export function createHttpServer() {
-  return http.createServer(async (req, res) => {
-    try {
-      if (!req.url) {
-        res.writeHead(400);
-        res.end('Bad Request');
-        return;
-      }
+  const app = express();
 
-      const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-      let pathname = url.pathname;
+  app.disable('x-powered-by');
+  app.use(express.json());
 
-      if (pathname === WS_PATH) {
-        res.writeHead(426);
-        res.end('Upgrade Required');
-        return;
-      }
+  app.use('/api/auth', createAuthRouter());
 
-      if (pathname === '/rooms') pathname = '/rooms.html';
-      if (pathname.startsWith('/room/')) {
-        pathname = '/room.html';
-      }
-      if (pathname === '/') pathname = '/index.html';
-
-      const filePath = safeJoin(projectRoot, pathname);
-      const ext = path.extname(filePath).toLowerCase();
-      const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
-      const content = await fs.readFile(filePath);
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content);
-    } catch {
-      res.writeHead(404);
-      res.end('Not Found');
-    }
+  app.get(WS_PATH, (_req, res) => {
+    res.status(426).send('Upgrade Required');
   });
-};
+
+  app.get('/', (_req, res) => {
+    sendPage(res, 'index.html');
+  });
+
+  app.get('/rooms', (_req, res) => {
+    sendPage(res, 'rooms.html');
+  });
+
+  app.get('/room/:roomId', (_req, res) => {
+    sendPage(res, 'room.html');
+  });
+
+  app.get('/login', (_req, res) => {
+    sendPage(res, 'login.html');
+  });
+
+  app.get('/profile', (_req, res) => {
+    sendPage(res, 'profile.html');
+  });
+
+  app.use(express.static(projectRoot));
+
+  app.use((_req, res) => {
+    res.status(404).send('Not Found');
+  });
+
+  return http.createServer(app);
+}

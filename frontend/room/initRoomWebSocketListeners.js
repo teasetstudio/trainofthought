@@ -1,15 +1,25 @@
 import { data } from './data/data.js';
-import { getUserId, getRoomIdFromPath, getWebSocketClient } from '../utils/index.js';
+import { getRoomIdFromPath, getWebSocketClient, isAuthenticated } from '../utils/index.js';
 import { updateSvgGraph } from './svg/index.js';
 import { nodeMove, nodeCreate, updateNodeContent, nodeDelete, linkCreate, linkDelete, updateNodeType } from './nodeManipulations.js';
 
-const userId = getUserId();
 const roomId = getRoomIdFromPath();
 
 export async function initRoomWebSocketListeners() {
-  const ws = await getWebSocketClient();
+  let ws;
+
+  try {
+    ws = await getWebSocketClient();
+  } catch {
+    window.location.href = '/login';
+    return;
+  }
 
   ws.addEventListener('close', () => {
+    if (!isAuthenticated()) {
+      window.location.href = '/login';
+      return;
+    }
     console.log('WebSocket disconnected');
   }, { once: true });
 

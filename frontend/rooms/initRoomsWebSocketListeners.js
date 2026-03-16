@@ -1,13 +1,23 @@
-import { getUserId } from '../utils/getUserId.js';
 import { getWebSocketClient } from '../utils/getWebSocketClient.js';
+import { isAuthenticated } from '../utils/authState.js';
 
 const roomsEl = document.getElementById('rooms');
-const userId = getUserId();
 
 export async function initRoomsWebSocketListeners() {
-  const ws = await getWebSocketClient();
+  let ws;
+
+  try {
+    ws = await getWebSocketClient();
+  } catch {
+    window.location.href = '/login';
+    return;
+  }
 
   ws.addEventListener('close', () => {
+    if (!isAuthenticated()) {
+      window.location.href = '/login';
+      return;
+    }
     console.log('WebSocket disconnected');
   }, { once: true });
 
@@ -43,7 +53,6 @@ async function renderRoomList(rooms) {
       socket.send(JSON.stringify({
         type: 'ROOM_JOIN',
         roomId: room.id,
-        userId,
       }));
     });
 
