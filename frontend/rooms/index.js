@@ -1,6 +1,7 @@
 import { initRoomsWebSocketListeners } from './initRoomsWebSocketListeners.js';
 import {
   openCreateModal,
+  openEditModal,
   closeCreateModal,
   confirmCreateRoom,
   initCreateStudioModal,
@@ -9,6 +10,7 @@ import {
 export {
   initRoomsWebSocketListeners,
   openCreateModal,
+  openEditModal,
   closeCreateModal,
   confirmCreateRoom,
   initCreateStudioModal

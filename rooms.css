@@ -217,6 +217,34 @@ body.rooms-page::before {
   position: relative;
 }
 
+.room-title {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-edit-btn {
+  margin-left: 0.7rem;
+  padding: 0.26rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(14, 22, 58, 0.85);
+  border: 1px solid var(--gold-dark);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.room-edit-btn:hover {
+  color: var(--gold-bright);
+  border-color: var(--gold-main);
+  background: rgba(22, 34, 80, 0.9);
+}
+
 .rooms-list li::before {
   content: '⚜';
   margin-right: 0.7rem;
@@ -433,6 +461,28 @@ body.rooms-page::before {
   border-color: var(--gold-main);
   border-bottom-color: var(--gold-bright);
   box-shadow: 0 4px 20px rgba(201,168,76,0.18);
+}
+
+.modal-toggle-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 0.8rem 0;
+  color: var(--text-dim);
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.modal-toggle-row input {
+  accent-color: var(--gold-main);
+}
+
+.modal-input:disabled {
+  cursor: not-allowed;
 }
 
 @keyframes shake {

@@ -104,11 +104,23 @@
         maxlength="60"
         autocomplete="off"
       />
+      <label class="modal-toggle-row" for="studio-private-input">
+        <input id="studio-private-input" type="checkbox" />
+        <span>Private Studio</span>
+      </label>
+      <input
+        id="studio-invites-input"
+        class="modal-input"
+        type="text"
+        placeholder="Invite emails (comma separated)"
+        maxlength="320"
+        autocomplete="off"
+      />
       <div class="modal-actions">
         <button class="modal-cancel" onclick="closeCreateModal()">Cancel</button>
         <button class="modal-confirm" onclick="confirmCreateRoom()">
           <span class="btn-fleur">⚜</span>
-          Create
+          <span class="modal-confirm-label">Create</span>
           <span class="btn-fleur">⚜</span>
         </button>
       </div>

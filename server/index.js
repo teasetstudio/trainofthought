@@ -3,6 +3,7 @@ import { WebSocketServer } from 'ws';
 import { rooms } from './services/RoomsState/index.js';
 import { createHttpServer } from './services/createHttpServer.js';
 import { authenticateWsRequest } from './services/auth/wsAuth.js';
+import { prisma } from './services/prisma.js';
  
 const PORT = Number(process.env.PORT || 3000);
 const WS_PATH = '/ws';
@@ -20,11 +21,40 @@ function broadcast(sender, obj) {
     client.send(payload);
   }
 }
-function broadcastAll(obj) {
-  const payload = JSON.stringify(obj);
+
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function parseInviteEmails(rawInviteEmails) {
+  if (!Array.isArray(rawInviteEmails)) return [];
+
+  return [...new Set(
+    rawInviteEmails
+      .map(normalizeEmail)
+      .filter(email => email.length > 0 && isValidEmail(email))
+  )];
+}
+
+function sendRoomsSnapshot(ws) {
+  const actorId = ws.auth?.id;
+  if (!actorId) return;
+
+  ws.send(JSON.stringify({
+    type: 'ROOMS_SNAPSHOT',
+    rooms: rooms.getRoomsSnapshotForPeer(actorId, ws.auth?.email),
+  }));
+}
+
+function broadcastRoomsSnapshots() {
   for (const client of wss.clients) {
     if (client.readyState !== 1) continue;
-    client.send(payload);
+    if (!client.auth?.id) continue;
+    sendRoomsSnapshot(client);
   }
 }
 
@@ -38,13 +68,9 @@ wss.on('connection', (ws, req) => {
 
   ws.auth = auth;
 
-  // rooms snapshot
-  ws.send(JSON.stringify({
-    type: 'ROOMS_SNAPSHOT',
-    rooms: rooms.getRoomsSnapshot(),
-  }));
+  sendRoomsSnapshot(ws);
   
-  ws.on('message', (raw) => {
+  ws.on('message', async (raw) => {
     try {
       const msg = JSON.parse(raw.toString());
       if (!msg || typeof msg !== 'object') return;
@@ -57,23 +83,70 @@ wss.on('connection', (ws, req) => {
         /* ---------- ROOMS (STUBS) ---------- */
 
         case 'ROOM_CREATE': {
+          const roomName = String(msg.name || '').trim();
+          if (!roomName) return;
+
+          const isPublic = msg.isPublic !== false;
+          const inviteEmails = isPublic ? [] : parseInviteEmails(msg.inviteEmails);
+          const invitedUsers = inviteEmails.length > 0
+            ? await prisma.user.findMany({
+              where: {
+                email: { in: inviteEmails },
+              },
+              select: {
+                id: true,
+              },
+            })
+            : [];
+
           rooms.createRoom({
-            name: msg.name,
+            name: roomName,
             ownerId: actorId,
-            isPublic: true,
+            isPublic,
+            invitedPeerIds: invitedUsers.map((user) => user.id),
+            invitedEmails: inviteEmails,
           });
 
-          broadcastAll({
-            type: 'ROOMS_SNAPSHOT',
-            rooms: rooms.getRoomsSnapshot()
+          broadcastRoomsSnapshots();
+          return;
+        }
+
+        case 'ROOM_UPDATE': {
+          const room = rooms.getRoom(msg.roomId);
+          if (!room) return;
+          if (!room.canManage(actorId)) return;
+
+          const roomName = String(msg.name || '').trim();
+          if (!roomName) return;
+
+          const isPublic = msg.isPublic !== false;
+          const inviteEmails = isPublic ? [] : parseInviteEmails(msg.inviteEmails);
+          const invitedUsers = inviteEmails.length > 0
+            ? await prisma.user.findMany({
+              where: {
+                email: { in: inviteEmails },
+              },
+              select: {
+                id: true,
+              },
+            })
+            : [];
+
+          room.updateSettings({
+            name: roomName,
+            isPublic,
+            invitedPeerIds: invitedUsers.map((user) => user.id),
+            invitedEmails: inviteEmails,
           });
+
+          broadcastRoomsSnapshots();
           return;
         }
 
         case 'ROOM_JOIN': {
           const room = rooms.getRoom(msg.roomId);
           if (!room) return;
-          if (!room.canJoin(actorId)) return;
+          if (!room.canJoin(actorId, ws.auth?.email)) return;
 
           room.addPeer({
             id: actorId,

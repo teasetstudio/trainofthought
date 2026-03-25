@@ -21,6 +21,8 @@ export class RoomsService {
     isPublic = true,
     ownerId,
     graphSeed,
+    invitedPeerIds = [],
+    invitedEmails = [],
   }) => {
     const newRoomId = id || crypto.randomUUID();
     const room = new Room({
@@ -29,6 +31,8 @@ export class RoomsService {
       isPublic,
       ownerId,
       graphSeed,
+      invitedPeerIds,
+      invitedEmails,
     });
     this.rooms.set(newRoomId, room);
     return room;
@@ -45,7 +49,22 @@ export class RoomsService {
   getRoomsSnapshot = () => {
     return [...this.rooms.values()].map(room => ({
       id: room.id,
-      name: room.name
+      name: room.name,
+      isPublic: room.isPublic,
     }));
+  };
+
+  getRoomsSnapshotForPeer = (peerId, peerEmail = '') => {
+    return [...this.rooms.values()]
+      .filter(room => room.canJoin(peerId, peerEmail))
+      .map(room => ({
+        id: room.id,
+        name: room.name,
+        isPublic: room.isPublic,
+        canManage: room.canManage(peerId),
+        invitedEmails: room.canManage(peerId)
+          ? [...room.invitedEmails.values()]
+          : [],
+      }));
   };
 };

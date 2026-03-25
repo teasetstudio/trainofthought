@@ -1,6 +1,10 @@
 import { GraphData, defaultGraphState } from "./graph.js";
 import { Peer } from "./peer.js";
 
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
 export class Room {
   id;
   name;
@@ -8,16 +12,28 @@ export class Room {
   peers = new Map(); // peerId → Peer
   graph;
   ownerId;
+  invitedPeerIds = new Set();
+  invitedEmails = new Set();
 
   // optional actor queue
   queue = [];
   processing = false;
 
-  constructor({ id, name, isPublic = true, ownerId, graphSeed = defaultGraphState }) {
+  constructor({
+    id,
+    name,
+    isPublic = true,
+    ownerId,
+    graphSeed = defaultGraphState,
+    invitedPeerIds = [],
+    invitedEmails = [],
+  }) {
     this.id = id;
     this.name = name;
     this.isPublic = isPublic;
     this.ownerId = ownerId;
+    this.invitedPeerIds = new Set(invitedPeerIds.filter(Boolean));
+    this.invitedEmails = new Set(invitedEmails.map(normalizeEmail).filter(Boolean));
     this.graph = new GraphData(
       graphSeed?.nodes ?? [],
       graphSeed?.links ?? []
@@ -26,9 +42,33 @@ export class Room {
 
   /* ---------- peer management ---------- */
 
-  canJoin(peerId) {
+  canJoin(peerId, peerEmail = '') {
     if (this.isPublic) return true;
-    return peerId === this.ownerId || this.peers.has(peerId);
+
+    const normalizedEmail = normalizeEmail(peerEmail);
+    return (
+      peerId === this.ownerId
+      || this.peers.has(peerId)
+      || this.invitedPeerIds.has(peerId)
+      || (normalizedEmail.length > 0 && this.invitedEmails.has(normalizedEmail))
+    );
+  }
+
+  canManage(peerId) {
+    return peerId === this.ownerId;
+  }
+
+  updateSettings({ name, isPublic, invitedPeerIds = [], invitedEmails = [] }) {
+    if (typeof name === 'string' && name.trim().length > 0) {
+      this.name = name.trim();
+    }
+
+    if (typeof isPublic === 'boolean') {
+      this.isPublic = isPublic;
+    }
+
+    this.invitedPeerIds = new Set(invitedPeerIds.filter(Boolean));
+    this.invitedEmails = new Set(invitedEmails.map(normalizeEmail).filter(Boolean));
   }
 
   addPeer(peerData) {
