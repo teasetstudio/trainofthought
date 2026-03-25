@@ -2,6 +2,7 @@ import {
   clearAuthSession,
   fetchWithAuth,
   getAuthSession,
+  navigateToPath,
   requireAuth,
   setAuthSession,
 } from './frontend/utils/index.js';
@@ -28,7 +29,7 @@ async function loadProfile() {
 
   if (!response.ok) {
     setStatus('Please login again');
-    window.location.href = '/login';
+    navigateToPath('/login');
     return;
   }
 
@@ -60,7 +61,7 @@ form.addEventListener('submit', async (event) => {
     if (!response.ok) {
       setStatus(data.error || 'Failed to save profile');
       if (response.status === 401) {
-        window.location.href = '/login';
+        navigateToPath('/login');
       }
       return;
     }
@@ -81,7 +82,7 @@ form.addEventListener('submit', async (event) => {
 
 logoutButton.addEventListener('click', () => {
   clearAuthSession();
-  window.location.href = '/login';
+  navigateToPath('/login');
 });
 
 await loadProfile();

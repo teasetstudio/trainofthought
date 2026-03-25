@@ -1,3 +1,5 @@
+import { navigateToPath } from './navigateToPath.js';
+
 const AUTH_STORAGE_KEY = 'train-of-thought.auth';
 
 function parseAuthSession(rawValue) {
@@ -53,13 +55,13 @@ export function isAuthenticated() {
 
 export function requireAuth(redirectPath = '/login') {
   if (isAuthenticated()) return true;
-  window.location.replace(redirectPath);
+  navigateToPath(redirectPath, { replace: true });
   return false;
 }
 
 export function redirectAuthenticated(path = '/rooms') {
   if (!isAuthenticated()) return false;
-  window.location.replace(path);
+  navigateToPath(path, { replace: true });
   return true;
 }
 

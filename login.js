@@ -1,4 +1,4 @@
-import { redirectAuthenticated, setAuthSession } from './frontend/utils/index.js';
+import { navigateToPath, redirectAuthenticated, setAuthSession } from './frontend/utils/index.js';
 
 if (!redirectAuthenticated('/rooms')) {
   const form = document.getElementById('auth-form');
@@ -66,7 +66,7 @@ if (!redirectAuthenticated('/rooms')) {
 
       authStatus.textContent = 'Success. Redirecting...';
       authStatus.classList.add('success');
-      window.location.href = '/rooms';
+      navigateToPath('/rooms');
     } catch {
       authStatus.textContent = 'Unable to reach server';
     }

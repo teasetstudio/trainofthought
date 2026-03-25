@@ -1,5 +1,6 @@
 import { getWebSocketClient } from '../utils/getWebSocketClient.js';
 import { isAuthenticated } from '../utils/authState.js';
+import { navigateToPath } from '../utils/navigateToPath.js';
 import { openEditModal } from './createStudioModal.js';
 
 const roomsEl = document.getElementById('rooms');
@@ -11,13 +12,13 @@ export async function initRoomsWebSocketListeners() {
   try {
     ws = await getWebSocketClient();
   } catch {
-    window.location.href = '/login';
+    navigateToPath('/login');
     return;
   }
 
   ws.addEventListener('close', () => {
     if (!isAuthenticated()) {
-      window.location.href = '/login';
+      navigateToPath('/login');
       return;
     }
     console.log('WebSocket disconnected');
@@ -38,7 +39,7 @@ export async function initRoomsWebSocketListeners() {
         break;
 
       case 'ROOM_JOINED':
-        window.location.href = `/room/${msg.roomId}`;
+        navigateToPath(`/room/${msg.roomId}`);
         break;
     }
   });

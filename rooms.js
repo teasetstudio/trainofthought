@@ -5,7 +5,7 @@ import {
   initCreateStudioModal,
   initRoomsWebSocketListeners,
 } from './frontend/rooms/index.js';
-import { clearAuthSession, requireAuth } from './frontend/utils/index.js';
+import { clearAuthSession, navigateToPath, requireAuth } from './frontend/utils/index.js';
 
 if (!requireAuth('/login')) {
   throw new Error('Authentication required');
@@ -17,7 +17,7 @@ window.closeCreateModal = closeCreateModal;
 window.confirmCreateRoom = confirmCreateRoom;
 window.logout = () => {
   clearAuthSession();
-  window.location.href = '/login';
+  navigateToPath('/login');
 };
 
 initCreateStudioModal();

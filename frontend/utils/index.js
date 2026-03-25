@@ -1,6 +1,7 @@
 import { getWebSocketClient } from './getWebSocketClient.js';
 import { getUserId } from './getUserId.js';
 import { getRoomIdFromPath } from './getRoomIdFromPath.js';
+import { navigateToPath } from './navigateToPath.js';
 import {
 	clearAuthSession,
 	fetchWithAuth,
@@ -23,6 +24,7 @@ export {
 	getUserId,
 	getWebSocketClient,
 	isAuthenticated,
+	navigateToPath,
 	redirectAuthenticated,
 	requireAuth,
 	setAuthSession,

@@ -1,4 +1,13 @@
 export function getRoomIdFromPath() {
-  const parts = location.pathname.split('/');
-  return parts[2]; // /room/{id}
+  const queryRoomId = new URLSearchParams(location.search).get('roomId');
+  if (queryRoomId) {
+    return queryRoomId;
+  }
+
+  const [, roomSegment, roomId] = location.pathname.split('/');
+  if (roomSegment === 'room' && roomId) {
+    return decodeURIComponent(roomId);
+  }
+
+  return '';
 }

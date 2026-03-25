@@ -1,5 +1,6 @@
 import { data } from './data/data.js';
 import { getRoomIdFromPath, getWebSocketClient, isAuthenticated } from '../utils/index.js';
+import { navigateToPath } from '../utils/navigateToPath.js';
 import { updateSvgGraph } from './svg/index.js';
 import { nodeMove, nodeCreate, updateNodeContent, nodeDelete, linkCreate, linkDelete, updateNodeType } from './nodeManipulations.js';
 
@@ -11,13 +12,13 @@ export async function initRoomWebSocketListeners() {
   try {
     ws = await getWebSocketClient();
   } catch {
-    window.location.href = '/login';
+    navigateToPath('/login');
     return;
   }
 
   ws.addEventListener('close', () => {
     if (!isAuthenticated()) {
-      window.location.href = '/login';
+      navigateToPath('/login');
       return;
     }
     console.log('WebSocket disconnected');
