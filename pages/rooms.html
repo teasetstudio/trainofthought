@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train of Thought — Studios</title>
+  <link rel="icon" type="image/x-icon" href="./favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/rooms.css">
+  <link rel="stylesheet" href="/pages/iframe.css">
+</head>
+<body class="rooms-page iframe-page">
+
+  <div class="flag-background"></div>
+  <div class="vignette-overlay"></div>
+
+  <main class="royal-panel">
+
+    <div class="panel-border-top">
+      <span class="fleur">⚜</span>
+      <span class="border-line"></span>
+      <span class="crown">♛</span>
+      <span class="border-line"></span>
+      <span class="fleur">⚜</span>
+    </div>
+
+    <header class="panel-header">
+      <div class="fleur-row">
+        <span>⚜</span><span>⚜</span><span>⚜</span>
+      </div>
+      <h1 class="page-title">Choose Your Studio</h1>
+      <p class="page-subtitle">Select a chamber or found a new one</p>
+    </header>
+
+    <div class="ornament-divider">
+      <span class="ornament-line"></span>
+      <span class="ornament-symbol">✦</span>
+      <span class="ornament-line"></span>
+    </div>
+
+    <ul id="rooms" class="rooms-list"></ul>
+
+    <div id="rooms-empty" class="rooms-empty">No studios yet. Be the first to found one.</div>
+
+    <div class="ornament-divider">
+      <span class="ornament-line"></span>
+      <span class="ornament-symbol">✦</span>
+      <span class="ornament-line"></span>
+    </div>
+
+    <div class="actions-row">
+      <a href="/" class="back-btn">
+        <span>⚜</span>
+        Home
+      </a>
+      <a href="/profile" class="back-btn">
+        <span>⚜</span>
+        Profile
+      </a>
+      <button type="button" class="back-btn" onclick="logout()">
+        <span>⚜</span>
+        Logout
+      </button>
+      <button class="create-btn" onclick="openCreateModal()">
+        <span class="btn-fleur">⚜</span>
+        Found Studio
+        <span class="btn-fleur">⚜</span>
+      </button>
+    </div>
+
+    <div class="panel-border-bottom">
+      <span class="fleur">⚜</span>
+      <span class="border-line"></span>
+      <span class="crown">♛</span>
+      <span class="border-line"></span>
+      <span class="fleur">⚜</span>
+    </div>
+
+  </main>
+
+  <div id="create-modal" class="modal-backdrop" inert>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-border-top">
+        <span class="fleur">⚜</span>
+        <span class="border-line"></span>
+        <span class="crown">♛</span>
+        <span class="border-line"></span>
+        <span class="fleur">⚜</span>
+      </div>
+      <h2 class="modal-title" id="modal-title">Found a New Studio</h2>
+      <p class="modal-subtitle">Give your chamber a name</p>
+      <div class="modal-ornament">
+        <span class="ornament-line"></span>
+        <span class="ornament-symbol">✦</span>
+        <span class="ornament-line"></span>
+      </div>
+      <input
+        id="studio-name-input"
+        class="modal-input"
+        type="text"
+        placeholder="e.g. The Grand Atelier..."
+        maxlength="60"
+        autocomplete="off"
+      />
+      <label class="modal-toggle-row" for="studio-private-input">
+        <input id="studio-private-input" type="checkbox" />
+        <span>Private Studio</span>
+      </label>
+      <input
+        id="studio-invites-input"
+        class="modal-input"
+        type="text"
+        placeholder="Invite emails (comma separated)"
+        maxlength="320"
+        autocomplete="off"
+      />
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeCreateModal()">Cancel</button>
+        <button class="modal-confirm" onclick="confirmCreateRoom()">
+          <span class="btn-fleur">⚜</span>
+          Create
+          <span class="btn-fleur">⚜</span>
+        </button>
+      </div>
+      <div class="modal-border-bottom">
+        <span class="fleur">⚜</span>
+        <span class="border-line"></span>
+        <span class="crown">♛</span>
+        <span class="border-line"></span>
+        <span class="fleur">⚜</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/frontend/host/childPage.js"></script>
+  <script type="module" src="/rooms.js" defer></script>
+</body>
+</html>

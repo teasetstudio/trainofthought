@@ -1,5 +1,5 @@
 const canvas = document.getElementById('dust-canvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas?.getContext('2d');
 
 const PARTICLE_COUNT = 90;
 
@@ -12,11 +12,15 @@ const COLORS = [
   'rgba(255, 240, 180, {a})',
 ];
 
+let particles = [];
+let rafId = null;
+let isRunning = false;
+
 function resize() {
-  canvas.width  = window.innerWidth;
+  if (!canvas) return;
+  canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
-resize();
 window.addEventListener('resize', resize);
 
 function randBetween(a, b) {
@@ -70,18 +74,35 @@ class Particle {
   }
 }
 
-const particles = Array.from(
-  { length: PARTICLE_COUNT },
-  () => new Particle()
-);
-
 function loop() {
+  if (!isRunning || !ctx || !canvas) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const p of particles) {
     p.update();
     p.draw();
   }
-  requestAnimationFrame(loop);
+  rafId = requestAnimationFrame(loop);
 }
 
-loop();
+export function startDust() {
+  if (!canvas || !ctx || isRunning) return;
+  resize();
+  particles = Array.from(
+    { length: PARTICLE_COUNT },
+    () => new Particle()
+  );
+  isRunning = true;
+  loop();
+}
+
+export function stopDust() {
+  isRunning = false;
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+
+  if (ctx && canvas) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}

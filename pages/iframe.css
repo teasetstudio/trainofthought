@@ -1,0 +1,31 @@
+html,
+body {
+  height: 100%;
+}
+
+body.iframe-page {
+  margin: 0;
+  min-height: 100vh;
+  background: transparent !important;
+}
+
+body.iframe-page.home-page,
+body.iframe-page.rooms-page,
+body.iframe-page.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+body.iframe-page.home-page::before,
+body.iframe-page.rooms-page::before {
+  display: none !important;
+}
+
+body.iframe-page .flag-background,
+body.iframe-page .vignette-overlay,
+body.iframe-page .fogwrapper,
+body.iframe-page #dust-canvas {
+  display: none !important;
+}

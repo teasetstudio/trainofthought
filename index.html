@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Train of Thought — A Canvas for the Sovereign Mind</title>
+  <title>Train of Thought</title>
   <link rel="icon" type="image/x-icon" href="./public/images/favicon2.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/home.css">
   <link rel="stylesheet" href="/fog.css">
+  <link rel="stylesheet" href="/frontend/host/host.css">
 </head>
-<body class="home-page">
+<body class="home-page host-shell">
 
   <div class="flag-background"></div>
   <div class="vignette-overlay"></div>
@@ -33,70 +34,19 @@
   <!-- Particles -->
   <canvas id="dust-canvas"></canvas>
 
-  <main class="royal-panel">
+  <div id="host-root">
+    <nav id="layout-nav" hidden>
+      <a href="/rooms" data-host-nav class="host-nav-link">Studios</a>
+      <a href="/profile" data-host-nav class="host-nav-link">Profile</a>
+      <span id="host-user-label" class="host-nav-link"></span>
+      <button type="button" id="host-logout-button" class="host-nav-button">Logout</button>
+    </nav>
 
-    <div class="panel-border-top">
-      <span class="fleur">⚜</span>
-      <span class="border-line"></span>
-      <span class="crown">♛</span>
-      <span class="border-line"></span>
-      <span class="fleur">⚜</span>
+    <div id="frame-container">
+      <iframe id="page-frame" title="Train of Thought page" loading="eager"></iframe>
     </div>
+  </div>
 
-    <header class="panel-header">
-      <div class="fleur-row">
-        <span>⚜</span><span>⚜</span><span>⚜</span>
-      </div>
-      <h1 class="app-title">Train of Thought</h1>
-      <p class="app-subtitle">A Canvas for the Sovereign Mind</p>
-    </header>
-
-    <div class="ornament-divider">
-      <span class="ornament-line"></span>
-      <span class="ornament-symbol">✦</span>
-      <span class="ornament-line"></span>
-    </div>
-
-    <blockquote class="hugo-quote">
-      <div class="open-quote">"</div>
-      <p>
-        The pursuit of pleasure&thinsp;—&thinsp;what a sorry purpose<br>
-        and what a paltry ambition!<br>
-        <span class="quote-indent">The brute beast pursues pleasure.</span><br>
-        The pursuit of thought,<br>
-        that is the soul's real triumph!
-      </p>
-      <div class="close-quote">"</div>
-      <cite>— Victor Hugo, <em>Les Misérables</em></cite>
-    </blockquote>
-
-    <div class="ornament-divider">
-      <span class="ornament-line"></span>
-      <span class="ornament-symbol">✦</span>
-      <span class="ornament-line"></span>
-    </div>
-
-    <p class="app-description">
-      Lay your thoughts upon the infinite board.<br>
-      Arrange them. Connect them. Let them reign.
-    </p>
-
-    <a href="/rooms" class="enter-btn">
-      <span class="btn-fleur">⚜</span>
-      Enter the Studio
-      <span class="btn-fleur">⚜</span>
-    </a>
-
-    <div class="panel-border-bottom">
-      <span class="fleur">⚜</span>
-      <span class="border-line"></span>
-      <span class="crown">♛</span>
-      <span class="border-line"></span>
-      <span class="fleur">⚜</span>
-    </div>
-
-  </main>
-
-  <script src="/dust.js"></script>
+  <script type="module" src="/frontend/host/hostApp.js"></script>
 </body>
 </html>

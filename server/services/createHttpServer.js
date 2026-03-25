@@ -24,26 +24,10 @@ export function createHttpServer() {
     sendPage(res, 'index.html');
   });
 
-  app.get('/rooms', (_req, res) => {
-    sendPage(res, 'rooms.html');
-  });
-
-  app.get('/room/:roomId', (_req, res) => {
-    sendPage(res, 'room.html');
-  });
-
-  app.get('/login', (_req, res) => {
-    sendPage(res, 'login.html');
-  });
-
-  app.get('/profile', (_req, res) => {
-    sendPage(res, 'profile.html');
-  });
-
   app.use(express.static(projectRoot));
 
-  app.use((_req, res) => {
-    res.status(404).send('Not Found');
+  app.get('/{*path}', (_req, res) => {
+    sendPage(res, 'index.html');
   });
 
   return http.createServer(app);
