@@ -18,6 +18,24 @@ body.iframe-page.auth-page {
   min-height: 100vh;
 }
 
+body.iframe-page.home-page {
+  display: block;
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+body.iframe-page.home-page .home-page-content {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem 0;
+}
+
+body.iframe-page.home-page .royal-panel {
+  margin: 0 auto;
+}
+
 body.iframe-page.home-page::before,
 body.iframe-page.rooms-page::before {
   display: none !important;

@@ -1,5 +1,7 @@
 body.home-page.host-shell {
   display: block;
+  height: 100vh;
+  overflow: hidden;
 }
 
 #host-root {
@@ -43,15 +45,14 @@ body.home-page.host-shell {
   position: relative;
   z-index: 15;
   width: 100%;
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 #page-frame {
+  display: block;
   border: 0;
   width: 100%;
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
   background: transparent;
 }
 
