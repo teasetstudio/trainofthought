@@ -5,8 +5,7 @@ import { getUserId, getRoomIdFromPath, requireAuth } from './frontend/utils/inde
 import { initRoomWebSocketListeners } from './frontend/room/initRoomWebSocketListeners.js';
 import { hideNodeOverlay } from './frontend/room/svg/index.js';
 import { clearSelection, getSelectedLinks, getSelectedNodeIds, hasAnySelection } from './frontend/room/svg/selectionState.js';
-import { linkDelete, nodeDelete } from './frontend/room/nodeManipulations.js';
-import { sendLinkDelete, sendNodeDelete } from './frontend/room/webSocketSendEvents.js';
+import { deleteGraphElementsWithHistory, undoLastAction } from './frontend/room/actionHistory.js';
 import { getCurrentFolderId, renderBreadcrumb, renderParentContextCard } from './frontend/room/folderState.js';
 
 if (!requireAuth('/login')) {
@@ -51,14 +50,11 @@ function deleteSelection() {
   clearSelection();
   hideNodeOverlay();
 
-  selectedLinks.forEach(link => {
-    linkDelete(link.source, link.target);
-    sendLinkDelete(userId, roomId, link.source, link.target);
-  });
-
-  deletableNodeIds.forEach(nodeId => {
-    nodeDelete(nodeId);
-    sendNodeDelete(userId, roomId, nodeId);
+  deleteGraphElementsWithHistory({
+    nodeIds: deletableNodeIds,
+    links: selectedLinks,
+    userId,
+    roomId,
   });
 }
 
@@ -72,9 +68,23 @@ svg.on('click', (event) => {
   }
 });
 
-window.addEventListener('keydown', (event) => {
-  if (event.key !== 'Delete' && event.key !== 'Backspace') return;
+window.addEventListener('keydown', async (event) => {
   if (isEditableTarget(event.target)) return;
+
+  const isUndoShortcut = event.key.toLowerCase() === 'z'
+    && (event.ctrlKey || event.metaKey)
+    && !event.shiftKey
+    && !event.altKey;
+
+  if (isUndoShortcut) {
+    const didUndo = await undoLastAction({ userId, roomId });
+    if (!didUndo) return;
+
+    event.preventDefault();
+    return;
+  }
+
+  if (event.key !== 'Delete' && event.key !== 'Backspace') return;
   if (!hasAnySelection()) return;
 
   event.preventDefault();

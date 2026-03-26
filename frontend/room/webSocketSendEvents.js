@@ -11,14 +11,16 @@ export function sendRoomJoinEvent(roomId) {
 
 const lastMoveSentAtByNodeId = new Map();
 
-export async function sendNodeMove(userId, roomId, nodeId, x, y) {
+export async function sendNodeMove(userId, roomId, nodeId, x, y, options = {}) {
   const socket = await getWebSocketClient();
   if (!socket || socket.readyState !== WebSocket.OPEN) return;
   
-  const now = Date.now();
-  const lastMoveSentAt = lastMoveSentAtByNodeId.get(nodeId) ?? 0;
-  if (now - lastMoveSentAt < 25) return;
-  lastMoveSentAtByNodeId.set(nodeId, now);
+  if (!options.force) {
+    const now = Date.now();
+    const lastMoveSentAt = lastMoveSentAtByNodeId.get(nodeId) ?? 0;
+    if (now - lastMoveSentAt < 25) return;
+    lastMoveSentAtByNodeId.set(nodeId, now);
+  }
   
   socket.send(JSON.stringify({ type: 'NODE_MOVE', nodeId, x, y, userId, roomId }));
 }

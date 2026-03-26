@@ -1,9 +1,8 @@
 import { svgContainer } from './svg.js';
 import { data } from '../data/data.js';
 import { updateContentModal } from '../components/updateContentModal.js';
-import { nodeDelete, linkCreate } from '../nodeManipulations.js';
+import { createLinkWithHistory, deleteNodeWithHistory } from '../actionHistory.js';
 import { getUserId, getRoomIdFromPath } from '../../utils/index.js';
-import { sendNodeDelete, sendLinkCreate } from '../webSocketSendEvents.js';
 import { isLinking, startLinking, updateLinkingLine, updateLinkingHover, finishLinking } from './linkingState.js';
 import { getSingleSelectedNodeId } from './selectionState.js';
 import { enterFolder, getCurrentFolderId } from '../folderState.js';
@@ -57,8 +56,7 @@ function _startOverlayLinking(sourceNodeId) {
     const sourceId = finishLinking();
 
     if (targetId !== null && targetId !== sourceId) {
-      linkCreate(sourceId, targetId);
-      sendLinkCreate(_userId, _roomId, sourceId, targetId);
+      createLinkWithHistory(sourceId, targetId, _userId, _roomId);
     }
 
     _stopOverlayLinkMode();
@@ -233,8 +231,7 @@ function _renderPanel(node) {
         }
 
         hideNodeOverlay();
-        nodeDelete(idToDelete);
-        sendNodeDelete(_userId, _roomId, idToDelete);
+        deleteNodeWithHistory(idToDelete, _userId, _roomId);
       },
     },
   ];

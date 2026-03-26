@@ -3,12 +3,12 @@ import { calculateEdgePosition } from '../data/dataUtils.js';
 import { pendingNode } from '../pendingNode.js';
 import { svgContainer } from './svg.js';
 import { getUserId, getRoomIdFromPath } from '../../utils/index.js';
-import { sendNodeMove, sendNodeCreate, sendLinkCreate } from '../webSocketSendEvents.js';
+import { sendNodeMove, sendNodeCreate } from '../webSocketSendEvents.js';
 import { applyShiftConstraint, movePendingNode } from './pendingNodeHelpers.js';
 import { applyNodeTextWrap } from '../nodeLayout.js';
 import { hideNodeOverlay, syncNodeOverlay } from './nodeOverlay.js';
 import { isLinking, startLinking, updateLinkingLine, updateLinkingHover, finishLinking } from './linkingState.js';
-import { linkCreate } from '../nodeManipulations.js';
+import { createLinkWithHistory, recordNodeCreateAction, recordNodeMoveAction } from '../actionHistory.js';
 import { getVisibleGraph, renderParentContextCard } from '../folderState.js';
 import {
   applySelectionStyles,
@@ -179,6 +179,7 @@ export async function updateSvgGraph() {
           pendingNode.create(event, d);
 
           if (pendingNode.nodeData) {
+            recordNodeCreateAction(pendingNode.nodeData, pendingNode.linkData);
             sendNodeCreate(userId, roomId, pendingNode.nodeData, pendingNode.linkData);
           }
         }
@@ -295,8 +296,7 @@ export async function updateSvgGraph() {
           const sourceId = finishLinking();
 
           if (targetId !== null && targetId !== sourceId) {
-            linkCreate(sourceId, targetId);
-            sendLinkCreate(userId, roomId, sourceId, targetId);
+            createLinkWithHistory(sourceId, targetId, userId, roomId);
           }
 
           return;
@@ -317,6 +317,22 @@ export async function updateSvgGraph() {
           if (!d.didDrag) {
             syncNodeOverlay();
           } else {
+            const moves = (d.dragNodeIds ?? [d.id]).map(nodeId => {
+              const initialPosition = d.dragInitialPositions?.get(nodeId);
+              const node = data.findNodeById(nodeId);
+
+              if (!initialPosition || !node) {
+                return null;
+              }
+
+              return {
+                nodeId,
+                from: { x: initialPosition.x, y: initialPosition.y },
+                to: { x: node.x, y: node.y },
+              };
+            }).filter(Boolean);
+
+            recordNodeMoveAction(moves);
             hideNodeOverlay();
           }
 
