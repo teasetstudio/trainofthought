@@ -169,6 +169,61 @@ body.rooms-page::before {
 }
 .ornament-symbol { color: var(--gold-main); font-size: 0.8rem; }
 
+/* ---------- Discovery controls ---------- */
+.room-discovery-controls {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.control-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.control-input,
+.control-select {
+  width: 100%;
+  min-height: 38px;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--gold-dark);
+  background: rgba(14, 22, 58, 0.75);
+  color: var(--text-light);
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.control-input::placeholder {
+  color: rgba(201, 184, 122, 0.68);
+  letter-spacing: 0.03em;
+}
+
+.control-input:focus,
+.control-select:focus {
+  border-color: var(--gold-main);
+  box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.45);
+  background: rgba(22, 34, 80, 0.9);
+}
+
+.control-select option {
+  color: var(--text-light);
+  background: #111d4a;
+}
+
 /* ---------- Rooms list ---------- */
 .rooms-list {
   list-style: none;
@@ -348,6 +403,23 @@ body.rooms-page::before {
 .rooms-list::-webkit-scrollbar { width: 4px; }
 .rooms-list::-webkit-scrollbar-track { background: transparent; }
 .rooms-list::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+
+@media (max-width: 940px) {
+  .room-discovery-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .royal-panel {
+    width: 94%;
+    padding: 2.2rem 1.5rem;
+  }
+
+  .room-discovery-controls {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ---------- Modal ---------- */
 .modal-backdrop {

@@ -40,6 +40,48 @@
       <span class="ornament-line"></span>
     </div>
 
+    <section class="room-discovery-controls" aria-label="Find a studio">
+      <label class="control-group" for="rooms-search-input">
+        <span class="control-label">Search</span>
+        <input
+          id="rooms-search-input"
+          class="control-input"
+          type="search"
+          placeholder="Search by studio name"
+          maxlength="80"
+          autocomplete="off"
+        />
+      </label>
+
+      <label class="control-group" for="rooms-visibility-filter">
+        <span class="control-label">Visibility</span>
+        <select id="rooms-visibility-filter" class="control-select">
+          <option value="all">All</option>
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+        </select>
+      </label>
+
+      <label class="control-group" for="rooms-access-filter">
+        <span class="control-label">Access</span>
+        <select id="rooms-access-filter" class="control-select">
+          <option value="all">All</option>
+          <option value="manageable">Can Manage</option>
+          <option value="join-only">Join Only</option>
+        </select>
+      </label>
+
+      <label class="control-group" for="rooms-sort-select">
+        <span class="control-label">Sort</span>
+        <select id="rooms-sort-select" class="control-select">
+          <option value="name-asc">Name A-Z</option>
+          <option value="name-desc">Name Z-A</option>
+          <option value="public-first">Public First</option>
+          <option value="private-first">Private First</option>
+        </select>
+      </label>
+    </section>
+
     <ul id="rooms" class="rooms-list"></ul>
 
     <div id="rooms-empty" class="rooms-empty">No studios yet. Be the first to found one.</div>
