@@ -5,7 +5,7 @@ import { createHttpServer } from './services/createHttpServer.js';
 import { authenticateWsRequest } from './services/auth/wsAuth.js';
 import { prisma } from './services/prisma.js';
  
-const PORT = Number(process.env.PORT || 3000);
+const PORT = Number(process.env.PORT || 3001);
 const WS_PATH = '/ws';
 const WS_UNAUTHORIZED_CLOSE_CODE = 4001;
 
